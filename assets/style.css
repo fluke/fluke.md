@@ -99,11 +99,11 @@ a:focus-visible { outline: 3px dashed var(--ink); outline-offset: 4px; }
   display: flex;
   justify-content: center;
   align-items: baseline;
-  gap: 4px;
-  font-size: 18px;
+  gap: 14px;
+  font-size: 15px;
+  letter-spacing: 1px;
 }
-.wordmark .name { font-style: italic; letter-spacing: 2px; color: #c9c7d1; }
-.wordmark .tld { font-size: 20px; letter-spacing: 1px; }
+.wordmark .name { font-style: italic; color: #c9c7d1; }
 .c1 { color: #e2484f; } .c2 { color: #eea43a; } .c3 { color: #e9d34a; }
 .c4 { color: #58b85c; } .c5 { color: #4a8fd6; } .c6 { color: #a377dc; }
 
@@ -240,8 +240,7 @@ h1, h2 { margin: 0; }
   .label, .wordmark { padding-left: 0; }
   .label { font-size: 8px; text-align: center; }
   .label .loc { white-space: nowrap; }
-  .wordmark { font-size: 14px; }
-  .wordmark .tld { font-size: 15px; }
+  .wordmark { font-size: 11px; }
   .bay { flex-direction: column; gap: 10px; }
   .power { flex-direction: row; width: auto; padding: 0 4px; font-size: 12px; }
   .screen { padding: 22px 18px 28px; gap: 22px; }
