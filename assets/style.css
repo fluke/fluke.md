@@ -152,27 +152,29 @@ h1, h2 { margin: 0; }
 .menu { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 16px; }
 .menu a { display: flex; gap: 12px; align-items: flex-start; }
 .menu a:hover { text-decoration: none; }
-.menu a:focus-visible { outline: none; }
+.menu a:focus { outline: none; }
 .menu .cur { visibility: hidden; margin-top: 6px; flex-shrink: 0; shape-rendering: crispEdges; }
-.menu a:hover .cur, .menu a:focus-visible .cur { visibility: visible; }
-.menu a:hover .nm, .menu a:focus-visible .nm { text-decoration: underline; text-decoration-thickness: 2px; text-underline-offset: 4px; }
+.menu a:hover .cur, .menu a:focus .cur { visibility: visible; }
+.menu a:hover .nm, .menu a:focus .nm { text-decoration: underline; text-decoration-thickness: 2px; text-underline-offset: 4px; }
 .menu .nm { font-size: 30px; }
 .menu.posts .nm { font-size: 26px; }
 .menu .sub { font-size: 22px; color: #343c28; }
 
 /* ---------- home ---------- */
 .home { flex: 1; display: flex; gap: clamp(40px, 5vw, 80px); padding-top: 24px; }
-.home .intro { flex: 0 1 520px; min-width: 0; display: flex; flex-direction: column; gap: 28px; }
-.home .title { display: flex; align-items: flex-end; gap: 12px; }
-.home h1 { font-size: 30px; letter-spacing: 3px; line-height: 1.5; }
-.home .title .cursor { flex-shrink: 0; margin-bottom: 8px; }
-.home .cursor { width: 16px; height: 32px; background: var(--ink); }
+.home .intro { flex: 0 1 520px; min-width: 0; container-type: inline-size; display: flex; flex-direction: column; gap: 28px; }
+.home .title { display: flex; align-items: center; gap: 0.5em; white-space: nowrap; font-size: min(28px, 100cqi / 20); }
+.home h1 { font-size: 1em; letter-spacing: 0.08em; line-height: 1.2; }
+.home .title .cursor { flex-shrink: 0; width: 0.5em; height: 1em; }
+.picking .home .title .cursor { visibility: hidden; }
+.home .cursor { background: var(--ink); }
 .home .role { font-size: 26px; }
 .home .lead { font-size: 28px; }
 .home .foot { margin-top: auto; font-size: 20px; }
 .home .links { font-size: 11px; letter-spacing: 1px; line-height: 2.2; }
 .home .keys { margin-top: auto; font-size: 9px; letter-spacing: 1px; }
 .home .keys + .foot { margin-top: 0; }
+.home .role a, .home .lead a, .project .copy p a { text-decoration: underline; text-decoration-thickness: 2px; text-underline-offset: 4px; }
 .home .links a { text-decoration: underline; text-decoration-thickness: 2px; text-underline-offset: 4px; }
 .home .lists { flex: 1; min-width: 260px; display: flex; flex-direction: column; gap: 40px; padding-top: 8px; }
 .home h2 { font-size: 12px; letter-spacing: 2px; margin-bottom: 18px; }
@@ -220,6 +222,7 @@ h1, h2 { margin: 0; }
   .bezel { padding: 16px 14px 18px; border-radius: 14px 14px 56px 14px; gap: 12px; }
   .label, .wordmark { padding-left: 0; }
   .label { font-size: 8px; text-align: center; }
+  .label .loc { white-space: nowrap; }
   .wordmark { font-size: 11px; }
   .bay { flex-direction: column; gap: 10px; }
   .power { flex-direction: row; width: auto; padding: 0 4px; font-size: 12px; }
@@ -233,8 +236,6 @@ h1, h2 { margin: 0; }
   .home { flex-direction: column; gap: 40px; padding-top: 4px; }
   .home .intro { flex: none; gap: 20px; }
   .home .lists, .info { min-width: 0; }
-  .home h1 { font-size: 22px; }
-  .home .cursor { width: 11px; height: 22px; }
   .home .lead { font-size: 25px; }
   .home .links { font-size: 9px; }
   .home .keys { display: none; }
