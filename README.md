@@ -1,6 +1,8 @@
 # kartik-site
 
-Personal site, styled after a grape Game Boy Color. Plain HTML + one CSS file — no build step.
+Personal site, styled after a grape Game Boy Color. Plain HTML + one CSS file + a tiny keyboard script — no build step. Live at https://fluke.md (GitHub Pages; `CNAME` holds the domain).
+
+Keys: ↑/↓ move the menu cursor, Enter or A opens, ←/→ previous/next project, Esc or B goes back.
 
 ## Put it on GitHub Pages
 
