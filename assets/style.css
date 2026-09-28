@@ -34,7 +34,7 @@ a:focus-visible { outline: 3px dashed var(--ink); outline-offset: 4px; }
 .console {
   position: relative;
   min-height: 100vh;
-  padding: 36px 36px 76px;
+  padding: 20px 32px 48px;
   display: flex;
   box-shadow: inset 0 0 120px rgba(30, 12, 70, .35);
 }
@@ -47,10 +47,10 @@ a:focus-visible { outline: 3px dashed var(--ink); outline-offset: 4px; }
   background: var(--bezel);
   border-radius: 18px 18px 120px 18px;
   box-shadow: 0 2px 0 rgba(255, 255, 255, .08), inset 0 0 0 2px var(--bezel-edge);
-  padding: 26px 64px 26px 40px;
+  padding: 20px 64px 20px 40px;
   display: flex;
   flex-direction: column;
-  gap: 18px;
+  gap: 14px;
 }
 
 .label {
@@ -88,7 +88,7 @@ a:focus-visible { outline: 3px dashed var(--ink); outline-offset: 4px; }
     linear-gradient(90deg, rgba(0, 0, 0, .05) 1px, transparent 1px);
   background-size: 3px 3px;
   box-shadow: inset 0 3px 0 rgba(0, 0, 0, .25), inset 0 0 40px rgba(0, 0, 0, .12);
-  padding: 32px 72px 40px;
+  padding: 28px clamp(32px, 4vw, 72px) 32px;
   display: flex;
   flex-direction: column;
   gap: 28px;
@@ -99,11 +99,11 @@ a:focus-visible { outline: 3px dashed var(--ink); outline-offset: 4px; }
   display: flex;
   justify-content: center;
   align-items: baseline;
-  gap: 14px;
-  font-size: 15px;
-  letter-spacing: 1px;
+  gap: 4px;
+  font-size: 18px;
 }
-.wordmark .name { font-style: italic; color: #c9c7d1; }
+.wordmark .name { font-style: italic; letter-spacing: 2px; color: #c9c7d1; }
+.wordmark .tld { font-size: 20px; letter-spacing: 1px; }
 .c1 { color: #e2484f; } .c2 { color: #eea43a; } .c3 { color: #e9d34a; }
 .c4 { color: #58b85c; } .c5 { color: #4a8fd6; } .c6 { color: #a377dc; }
 
@@ -149,20 +149,20 @@ p { margin: 0; }
 h1, h2 { margin: 0; }
 
 /* menu list with the ▶ cursor */
-.menu { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 16px; }
+.menu { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 10px; }
 .menu a { display: flex; gap: 12px; align-items: flex-start; }
 .menu a:hover { text-decoration: none; }
 .menu a:focus { outline: none; }
 .menu .cur { visibility: hidden; margin-top: 6px; flex-shrink: 0; shape-rendering: crispEdges; }
 .menu a:hover .cur, .menu a:focus .cur { visibility: visible; }
 .menu a:hover .nm, .menu a:focus .nm { text-decoration: underline; text-decoration-thickness: 2px; text-underline-offset: 4px; }
-.menu .nm { font-size: 30px; }
+.menu .nm { font-size: 26px; }
 .menu.posts .nm { font-size: 26px; }
-.menu .sub { font-size: 22px; color: #343c28; }
+.menu .sub { font-size: 20px; color: #343c28; }
 
 /* ---------- home ---------- */
-.home { flex: 1; display: flex; gap: clamp(40px, 5vw, 80px); padding-top: 24px; }
-.home .intro { flex: 0 1 520px; min-width: 0; container-type: inline-size; display: flex; flex-direction: column; gap: 28px; }
+.home { flex: 1; display: flex; gap: clamp(40px, 5vw, 80px); padding-top: 12px; }
+.home .intro { flex: 1 1 0; max-width: 520px; min-width: 0; container-type: inline-size; display: flex; flex-direction: column; gap: 28px; }
 .home .title { display: flex; align-items: center; gap: 0.5em; white-space: nowrap; font-size: min(28px, 100cqi / 20); }
 .home h1 { font-size: 1em; letter-spacing: 0.08em; line-height: 1.2; }
 .home .title .cursor { flex-shrink: 0; width: 0.5em; height: 1em; }
@@ -176,8 +176,10 @@ h1, h2 { margin: 0; }
 .home .keys + .foot { margin-top: 0; }
 .home .role a, .home .lead a, .project .copy p a { text-decoration: underline; text-decoration-thickness: 2px; text-underline-offset: 4px; }
 .home .links a { text-decoration: underline; text-decoration-thickness: 2px; text-underline-offset: 4px; }
-.home .lists { flex: 1; min-width: 260px; display: flex; flex-direction: column; gap: 40px; padding-top: 8px; }
-.home h2 { font-size: 12px; letter-spacing: 2px; margin-bottom: 18px; }
+.home .lists { flex: 1 1 0; min-width: 260px; display: flex; flex-direction: column; gap: 26px; padding-top: 6px; }
+.home h2 { font-size: 12px; letter-spacing: 2px; margin-bottom: 12px; }
+.home .more { display: inline-block; margin: 12px 0 0 24px; font-size: 10px; letter-spacing: 1px; }
+.home .more:focus, .home .more:hover { outline: none; text-decoration: underline; text-decoration-thickness: 2px; text-underline-offset: 4px; }
 
 /* ---------- project page ---------- */
 .project { flex: 1; display: flex; gap: clamp(32px, 4vw, 64px); }
@@ -215,6 +217,21 @@ h1, h2 { margin: 0; }
 .over .q { font-size: 14px; letter-spacing: 2px; }
 .screen.dim { background-color: #858c6f; }
 
+/* ---------- short laptop screens ---------- */
+@media (min-width: 901px) and (max-height: 780px) {
+  .console { padding-top: 12px; padding-bottom: 36px; }
+  .bezel { padding-top: 14px; padding-bottom: 14px; gap: 10px; }
+  .screen { padding-top: 20px; padding-bottom: 22px; }
+  .home { padding-top: 4px; }
+  .home .intro { gap: 20px; }
+  .home .role { font-size: 24px; }
+  .home .lead { font-size: 25px; }
+  .home .lists { gap: 18px; }
+  .menu { gap: 6px; }
+  .menu .nm { font-size: 24px; }
+  .menu .sub { font-size: 19px; }
+}
+
 /* ---------- phones & small tablets ---------- */
 @media (max-width: 900px) {
   body { font-size: 23px; }
@@ -223,7 +240,8 @@ h1, h2 { margin: 0; }
   .label, .wordmark { padding-left: 0; }
   .label { font-size: 8px; text-align: center; }
   .label .loc { white-space: nowrap; }
-  .wordmark { font-size: 11px; }
+  .wordmark { font-size: 14px; }
+  .wordmark .tld { font-size: 15px; }
   .bay { flex-direction: column; gap: 10px; }
   .power { flex-direction: row; width: auto; padding: 0 4px; font-size: 12px; }
   .screen { padding: 22px 18px 28px; gap: 22px; }
@@ -234,11 +252,12 @@ h1, h2 { margin: 0; }
   .menu .cur { display: none; }
   .menu .nm { text-decoration: underline; text-decoration-thickness: 2px; text-underline-offset: 4px; }
   .home { flex-direction: column; gap: 40px; padding-top: 4px; }
-  .home .intro { flex: none; gap: 20px; }
+  .home .intro { flex: none; max-width: none; gap: 20px; }
   .home .lists, .info { min-width: 0; }
   .home .lead { font-size: 25px; }
   .home .links { font-size: 9px; }
   .home .keys { display: none; }
+  .home .more { margin-left: 0; }
   .home .foot { display: none; }
   .home .foot-mobile { display: block; font-size: 20px; }
 

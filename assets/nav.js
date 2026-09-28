@@ -2,7 +2,7 @@
 // On the home page the cursor starts after the name, which is the stop before
 // the first menu item and after the last one.
 (function () {
-  var items = Array.prototype.slice.call(document.querySelectorAll('.menu a'));
+  var items = Array.prototype.slice.call(document.querySelectorAll('.menu a, .home .more'));
   var pager = document.querySelectorAll('.pager a');
   var back = document.querySelector('.crumbs a');
   var home = !!document.querySelector('.home .title .cursor');
