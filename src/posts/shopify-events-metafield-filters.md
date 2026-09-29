@@ -123,10 +123,7 @@ mutation {
 }
 ```
 
-Bulk operations aren't rate-limited like ordinary Admin API calls, so stamping a shop doesn't burn its API budget at the exact moment you enrol it. We drained about 183,000 active orders across 366 shops in a day, and only confirmed a write from a success line in the results file. Two things to watch:
-
-- **Poll the operation by its id** with `node(id:)`. `currentBulkOperation` returns the shop's newest bulk mutation, which isn't necessarily yours now that Shopify runs several at once. Ours once read another backfill's results file against its own batches.
-- **Bulk moves the bottleneck, it doesn't remove it.** Every stamp is itself an order change that echoes an `orders/updated` back at your workers. Our biggest shops arrived as bursts of tens of thousands, and an early wave that included closed orders set off an echo storm. Stamp only active orders, and pace them for your own queue, not for Shopify.
+Bulk operations aren't rate-limited like ordinary Admin API calls, so stamping a shop doesn't burn its API budget at the exact moment you enrol it. We drained about 183,000 active orders across 366 shops in a day, and only confirmed a write from a success line in the results file.
 
 ## What bit us?
 
