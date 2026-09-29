@@ -78,6 +78,7 @@ The router check leans towards processing whenever it's unsure:
 ```ruby
 def skip_webhook_for_events_cutover?(topic:, shop:)
   return false if events_disabled?
+  return false unless shop&.events_enabled?
   return false unless Toggle.enabled_cached?(shop, CUTOVER_TOGGLES[topic])
 
   events_processing_enabled?(shop: shop)
