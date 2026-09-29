@@ -81,7 +81,8 @@ def skip_webhook_for_events_cutover?(topic:, shop:)
   return false unless shop&.events_enabled?
   return false unless CUTOVER_TOPICS.include?(topic)
 
-  events_processing_enabled?(shop: shop)
+  # only skip the webhook once Events is already doing the work
+  processing_events_for?(shop, topic)
 rescue StandardError
   false # a duplicate is a no-op; a dropped update is unrecoverable
 end
