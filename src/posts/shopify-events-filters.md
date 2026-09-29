@@ -11,7 +11,7 @@ At [Artos Software](https://artossoftware.com) we build [STOQ](https://www.stoqa
 
 ## Why were we getting 4 million webhooks a day?
 
-A webhook subscription can't filter by order. Every edit, tag, fulfilment and refund on every order became a delivery, a queued job, and a database lookup that usually found nothing and returned. Roughly 350 of our largest shops sent over 60% of that traffic. A busy merchant working through orders all day generated millions of jobs that ended in "not ours".
+A webhook subscription can't filter by order. Every edit, tag, fulfilment and refund on every order became a delivery, a queued job, and a database lookup that usually found nothing and returned. Roughly 350 of our largest shops sent over 60% of that traffic. A busy merchant working through orders all day generated millions of jobs that ended in "not ours". And that's just the average. Plenty of merchants use bulk-editing apps to tag or update thousands of orders at once, and every one of those edits is another webhook, so a single run can send the count spiking well past it.
 
 What we actually need are the orders our app created or touched, mostly pre-orders. Those are already rows in our database.
 
