@@ -88,7 +88,7 @@ rescue StandardError
 end
 ```
 
-Steps 2 and 3 run at least five minutes apart, because our feature flags are cached for five minutes. Flip both at once and one worker can skip the webhook while another still ignores the Events delivery.
+Leave a gap between steps 2 and 3. Requests already in flight need time to catch up, and if you flip both at once, an update can slip between the webhook you just stopped and the Events delivery that isn't being processed yet.
 
 ## What bit us?
 
@@ -96,7 +96,7 @@ The dangerous ones failed silently and looked like success until we compared cou
 
 **A search filter Shopify can't apply matches everything.** Our hourly reconciler finds marked orders through Admin API order search. When a shop wasn't set up for that filter, Shopify ignored the term and returned every order, with no error. The canary we use now: search for a value that can't exist, and expect 0.
 
-**A query error drops the delivery.** If the query touches a field the shop's token can't read, Shopify sends a `query_errors` payload instead. In shadow we found we were dropping about 80% of order deliveries this way. Now we tolerate partial payloads, and shops missing the scope went last.
+**A query error drops the delivery.** If the query touches a field the shop's token can't read, Shopify sends a `query_errors` payload instead. In shadow we found we were dropping about 80% of order deliveries this way. Now we tolerate partial payloads, and shops missing the scope stay on webhooks.
 
 ## Did it work?
 
