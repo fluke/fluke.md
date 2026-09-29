@@ -9,6 +9,7 @@ themeColor: "#252c1e"
 <html lang="en">
 <head>
 {% include "head.njk" %}
+{% if draft %}<meta name="robots" content="noindex">{% endif %}
 <meta property="article:published_time" content="{{ page.date | isoDate }}">
 <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=JetBrains+Mono:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/assets/post.css?v={{ build.version }}">
@@ -22,6 +23,9 @@ themeColor: "#252c1e"
   <a class="wm pixel" href="/">{% include "wordmark.njk" %}</a>
 </header>
 <main class="screen">
+  {%- if draft %}
+  <p class="draft-banner pixel">DRAFT · NOT PUBLISHED</p>
+  {%- endif %}
   <article>
     <header class="fm">
       <div class="mk" aria-hidden="true">---</div>

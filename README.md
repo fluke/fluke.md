@@ -14,6 +14,7 @@ description: One or two sentences for search results and share cards.
 date: 2026-10-01
 tags: [shopify, rails]
 featured: true          # show on the home page (keep it to two)
+draft: true             # visible with `npm start` (or DRAFTS=1 npm run build), left out of the live site
 medium: https://…       # only for posts first published on Medium
 ---
 
@@ -25,6 +26,8 @@ Opening paragraph…
 code
 ```
 ~~~
+
+Drafts show a DRAFT banner and `[DRAFT]` in the writing list locally. Mark unfinished bits with `<span class="todo">TODO: …</span>`; they render in orange. Delete `draft: true` (and set the date) to publish.
 
 Images go in `src/assets/posts/<post>/` and are referenced as `/assets/posts/<post>/file.png`. Use `![alt text](/path "caption")` for a captioned figure.
 

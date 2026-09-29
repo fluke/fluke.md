@@ -11,7 +11,7 @@ description: Engineering notes by Kartik Luke Singh on Shopify apps, Rails and d
           <h1 class="pixel">WRITING</h1>
           <ul class="menu posts">
 {%- for post in collections.posts %}
-            {% set item = { href: post.url, name: post.data.title, sub: (post.date | displayDate) + " · " + (post.data.tags | topics | join(", ") | upper) } %}{% include "menu-item.njk" %}
+            {% set item = { href: post.url, name: ("[DRAFT] " if post.data.draft else "") + post.data.title, sub: (post.date | displayDate) + " · " + (post.data.tags | topics | join(", ") | upper) } %}{% include "menu-item.njk" %}
 {%- endfor %}
           </ul>
           <h2 class="pixel archive-head">ARCHIVE</h2>

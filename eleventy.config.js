@@ -81,6 +81,13 @@ export default function (eleventyConfig) {
   eleventyConfig.addPlugin(syntaxHighlight);
   eleventyConfig.amendLibrary("md", visibleMarkdown);
 
+  // `draft: true` posts render under `npm start` (or DRAFTS=1) and are left out
+  // of production builds entirely: no page, no feed entry, no sitemap line.
+  const showDrafts = process.env.ELEVENTY_RUN_MODE !== "build" || process.env.DRAFTS === "1";
+  eleventyConfig.addPreprocessor("drafts", "*", (data) => {
+    if (data.draft && !showDrafts) return false;
+  });
+
   eleventyConfig.addPassthroughCopy({ "src/assets": "assets", "src/CNAME": "CNAME" });
   eleventyConfig.addWatchTarget("src/assets/");
 

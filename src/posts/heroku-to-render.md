@@ -1,0 +1,88 @@
+---
+title: "Heroku to Render: moving a Rails app one service at a time"
+short: Heroku to Render, one service at a time
+description: How we moved a busy Rails app's web tier from Heroku to Render without a big-bang cutover — and what running one app on two platforms at once taught us.
+date: 2026-09-29
+tags: [rails, render, heroku]
+draft: true
+---
+
+At [Artos Software](https://artossoftware.com) we run [STOQ](https://www.stoqapp.com), a Rails app that serves Shopify storefronts, a merchant dashboard and a lot of background jobs. It had lived on Heroku for years. This year we moved its web tier to Render, one service at a time, while the rest kept running on Heroku. <span class="todo">TODO: one sentence in your words on what kicked it off in February.</span>
+
+## Why leave Heroku?
+
+It wasn't fire-fighting. It was cost and memory.
+
+- **Database egress roughly halved.** Our Postgres lives on PlanetScale. Render can reach it over AWS PrivateLink for about half the price per terabyte of public egress, once the services sat in the same region.
+- **Memory headroom brought YJIT back.** We'd turned YJIT off on Heroku after out-of-memory crashes on 1 GB dynos. On 2 GB instances, three Puma workers with YJIT sit around 1.1 GB, so it's back on.
+- **We control malloc.** Render's native Ruby runtime doesn't ship jemalloc, so we moved to a Docker image where we set it ourselves.
+- **Fewer add-ons.** An over-provisioned Redis, a cron add-on and an autoscaler all go away.
+
+## So how do you move a Rails app without a big-bang cutover?
+
+Service by service, starting with the one nobody outside the team uses.
+
+1. **Admin first,** as the proof of concept.
+2. **Network and region:** move to the same region as the database, then switch to PrivateLink.
+3. **Staging,** completely: web, worker, crons and Redis.
+4. **Shared state:** one Redis both platforms can reach.
+5. **The merchant dashboard.**
+6. **Storefront traffic,** which is still moving shop by shop.
+
+The production workers, crons and database migrations stay on Heroku for now. We tried workers on both platforms in staging and they happily consumed the same SQS queues. For production we want one consumer per queue and a clean switch, not two platforms racing.
+
+## How do you keep Render from serving code before its migration?
+
+Heroku's release phase still runs `db:migrate`, so Render must never serve a commit before Heroku has migrated it. We turned off Render's auto-deploy and added a cron that runs every minute and deploys Render pinned to Heroku's newest *succeeded* release:
+
+```ruby
+# Heroku is the migration authority (its release phase runs `rails db:migrate`),
+# so a commit is only safe to serve once the Heroku release carrying it has
+# SUCCEEDED.
+def sync
+  release = latest_release
+  return finish(:no_release) if release.blank?
+  return finish(:unchanged) if release['id'] == $redis.get(MARKER_KEY)
+
+  case release['status']
+  when 'succeeded' then deploy(release)
+  # ...
+  end
+end
+```
+
+It never raises, so one bad tick can't crash the cron, and it only retries services that didn't accept the deploy, because a repeated deploy request cancels one already running.
+
+## What does the Render side look like?
+
+One `render.yaml` Blueprint declares every service. Shared settings like `WEB_CONCURRENCY` live in an environment group, so we can tune them without a commit. Services find each other by name instead of by pasted URLs:
+
+```yaml
+- key: REDIS_LOCAL_URL
+  fromService:
+    type: keyvalue
+    name: stoq-local-redis
+    property: connectionString
+```
+
+Know this before you start: a Blueprint sync reapplies the whole file. Anything you changed in the dashboard and didn't put in the yaml gets reverted. Treat `render.yaml` as the only source of truth.
+
+## What bit us?
+
+Nearly every problem came from running one app on two platforms at once: two Redises, two caches, two deploy pipelines and one database.
+
+**Split-brain Redis.** Render read its own Redis while Heroku wrote to another. It first showed up as an admin page listing every shop as inactive, but the same split applied to locks and flags, and a lock only excludes processes that share a store. We moved per-node counters to a local Redis and put both platforms on one shared Redis for everything that coordinates.
+
+**A Redis client that never connected.** `Redis.new` doesn't connect until the first command. Our webhook rate limiter checked `connected?` before issuing anything, so it always bailed out and the rate limit was silently off. The rule since: issue the command and rescue the error; never pre-check.
+
+**Code ahead of its migration.** Before the deploy watcher, Render auto-deployed a view that read a new column before Heroku had migrated. Our first fix, a pre-deploy command, failed every deploy for twenty minutes. Reverting the commit didn't remove it either: service properties like that only change on a Blueprint sync.
+
+**Two caches, one setting.** Heroku's `Rails.cache` is Memcached and Render's is Redis. Clearing a cached setting only clears it on the platform that saved it. That one goes away when the workers move.
+
+## Did it work?
+
+The whole web tier and all of staging now run on Render. The biggest lesson was about capacity: our web services are CPU-idle and memory-bound. About 400 MB per Puma worker is just the app booted, not a leak, so the lever is memory per instance. That's why the dashboard and storefront services moved to 4 GB instances to fit more workers. <span class="todo">TODO: cost saved so far, and before/after latency for the dashboard, if you have them.</span>
+
+What's left is the part we deliberately deferred: production workers, crons, and running migrations on Render so the deploy watcher can go.
+
+And that covers moving a Rails web tier from Heroku to Render. If you're planning the same move, or want to compare notes, say hi on [X](https://x.com/0xfluke).
