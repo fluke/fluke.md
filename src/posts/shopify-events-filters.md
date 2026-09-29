@@ -58,7 +58,7 @@ query order_tracked($orderId: ID!) {
 query_filter = "order.customAttributes.key:'_tracked_by_stoq'"
 ```
 
-In production the filter also checks a shop-level switch, so we could roll out one shop at a time. Shopify evaluates the filter on its side, so an unmarked order never leaves Shopify. Deliveries come through Amazon EventBridge into SQS, and a small translator turns each one back into the shape `orders/updated` had, so the existing worker barely changed.
+Shopify evaluates the filter on its side, so an unmarked order never leaves Shopify. Deliveries come through Amazon EventBridge into SQS, and a small translator turns each one back into the shape `orders/updated` had, so the existing worker barely changed.
 
 Two rules we learned the hard way:
 
@@ -78,7 +78,6 @@ The router check leans towards processing whenever it's unsure:
 ```ruby
 def skip_webhook_for_events_cutover?(topic:, shop:)
   return false if events_disabled?
-  return false unless shop&.events_enabled?
   return false unless Toggle.enabled_cached?(shop, CUTOVER_TOGGLES[topic])
 
   events_processing_enabled?(shop: shop)
