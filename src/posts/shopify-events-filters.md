@@ -23,7 +23,7 @@ You mark them, so the marker shows up in the response you filter on. When a buye
 mutation markCart($cartId: ID!) {
   cartAttributesUpdate(
     cartId: $cartId
-    attributes: [{ key: "_tracked_by", value: "stoq" }]
+    attributes: [{ key: "_tracked_by_stoq", value: "true" }]
   ) {
     cart { id }
     userErrors { field message }
@@ -55,7 +55,7 @@ query order_tracked($orderId: ID!) {
   }
 }
 """
-query_filter = "order.customAttributes.value:'stoq'"
+query_filter = "order.customAttributes.key:'_tracked_by_stoq'"
 ```
 
 In production the filter also checks a shop-level switch, so we could roll out one shop at a time. Shopify evaluates the filter on its side, so an unmarked order never leaves Shopify. Deliveries come through Amazon EventBridge into SQS, and a small translator turns each one back into the shape `orders/updated` had, so the existing worker barely changed.
