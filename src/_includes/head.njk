@@ -1,0 +1,30 @@
+{%- set fullTitle = title if (title == site.name or not title) else title + " — " + site.name -%}
+{%- set desc = description or site.description -%}
+{%- set pageUrl = site.url + page.url -%}
+{%- set og = page.url | ogImage -%}
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{{ fullTitle | escape }}</title>
+<meta name="description" content="{{ desc | escape }}">
+<meta name="theme-color" content="{{ themeColor or '#5b3d9e' }}">
+<link rel="canonical" href="{{ pageUrl }}">
+<link rel="alternate" type="application/atom+xml" title="{{ site.name }}" href="/feed.xml">
+<meta property="og:type" content="{{ 'website' if page.url == '/' else 'article' }}">
+<meta property="og:site_name" content="{{ site.name }}">
+<meta property="og:title" content="{{ fullTitle | escape }}">
+<meta property="og:description" content="{{ desc | escape }}">
+<meta property="og:url" content="{{ pageUrl }}">
+<meta property="og:image" content="{{ og }}">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="{{ fullTitle | escape }} — a page styled like a grape Game Boy Color">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:site" content="{{ site.twitter }}">
+<meta name="twitter:creator" content="{{ site.twitter }}">
+<meta name="twitter:title" content="{{ fullTitle | escape }}">
+<meta name="twitter:description" content="{{ desc | escape }}">
+<meta name="twitter:image" content="{{ og }}">
+<link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<script>if (/[?&]og\b/.test(location.search)) document.documentElement.classList.add('og');</script>

@@ -1,0 +1,41 @@
+---
+layout: layouts/base.njk
+pagination:
+  data: projects
+  size: 1
+  alias: p
+  addAllPagesToCollections: true
+permalink: "/{{ p.slug }}/"
+eleventyComputed:
+  title: "{{ p.name }}"
+  description: "{{ p.desc }}"
+---
+{%- set n = projects | length -%}
+{%- set idx = projects.indexOf(p) -%}
+{%- set prev = projects[(idx - 1 + n) % n] -%}
+{%- set next = projects[(idx + 1) % n] -%}
+        <nav class="crumbs pixel" aria-label="Breadcrumb">
+          <a href="/">◀ HOME</a>
+          <span class="here">{{ p.section }} › {{ p.name | upper }}</span>
+        </nav>
+        <div class="project">
+          <div class="copy">
+            <h1 class="pixel">{{ p.name | upper }}</h1>
+{%- for para in p.paras %}
+            <p>{{ para | safe }}</p>
+{%- endfor %}
+{%- for o in p.out %}
+            <a class="out pixel" href="{{ o[0] }}">{{ o[1] }}</a>
+{%- endfor %}
+          </div>
+          <dl class="info">
+            <div class="head pixel">ITEM INFO</div>
+{%- for row in p.info %}
+            <div><dt>{{ row[0] }}</dt><dd>{{ row[1] | safe }}</dd></div>
+{%- endfor %}
+          </dl>
+        </div>
+        <nav class="pager pixel" aria-label="More projects">
+          <a href="/{{ prev.slug }}/">◀ {{ prev.name | upper }}</a>
+          <a href="/{{ next.slug }}/">{{ next.name | upper }} ▶</a>
+        </nav>

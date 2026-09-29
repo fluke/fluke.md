@@ -1,0 +1,25 @@
+---
+permalink: /feed.xml
+eleventyExcludeFromCollections: true
+---
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en">
+  <title>{{ site.name }}</title>
+  <subtitle>Engineering notes on Shopify apps, Rails and developer tooling.</subtitle>
+  <link href="{{ site.url }}/feed.xml" rel="self"/>
+  <link href="{{ site.url }}/"/>
+  <updated>{{ collections.posts | getNewestCollectionItemDate | dateToRfc3339 }}</updated>
+  <id>{{ site.url }}/</id>
+  <author><name>{{ site.name }}</name><uri>{{ site.url }}/</uri></author>
+  {%- for post in collections.posts %}
+  {%- set absoluteUrl = site.url + post.url %}
+  <entry>
+    <title>{{ post.data.title | escape }}</title>
+    <link href="{{ absoluteUrl }}"/>
+    <updated>{{ post.date | dateToRfc3339 }}</updated>
+    <id>{{ absoluteUrl }}</id>
+    <summary>{{ post.data.description | escape }}</summary>
+    <content type="html">{{ post.content | stripMarkers | htmlToAbsoluteUrls(absoluteUrl) | escape }}</content>
+  </entry>
+  {%- endfor %}
+</feed>

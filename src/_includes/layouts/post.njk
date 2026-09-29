@@ -1,0 +1,45 @@
+---
+themeColor: "#252c1e"
+---
+{%- set posts = collections.posts -%}
+{%- set i = posts | postIndex(page.url) -%}
+{%- set newer = posts[i - 1] if i > 0 else null -%}
+{%- set older = posts[i + 1] if i < posts.length - 1 else null -%}
+<!doctype html>
+<html lang="en">
+<head>
+{% include "head.njk" %}
+<meta property="article:published_time" content="{{ page.date | isoDate }}">
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=JetBrains+Mono:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/assets/post.css?v={{ build.version }}">
+<script src="/assets/nav.js?v={{ build.version }}" defer></script>
+<script type="application/ld+json">{{ { title: title, description: description, page: page, tags: tags } | postJsonLd | safe }}</script>
+</head>
+<body>
+<header class="bar">
+  <span class="led" aria-hidden="true"></span>
+  <nav class="crumbs pixel" aria-label="Breadcrumb"><a href="/writing/">◀ WRITING</a></nav>
+  <a class="wm pixel" href="/">{% include "wordmark.njk" %}</a>
+</header>
+<main class="screen">
+  <article>
+    <header class="fm">
+      <div class="mk" aria-hidden="true">---</div>
+      <div><span class="k">date:</span> <time datetime="{{ page.date | isoDate }}">{{ page.date | isoDate }}</time></div>
+      <div><span class="k">tags:</span> {{ tags | topics | join(", ") }}</div>
+      <div><span class="k">read:</span> {{ content | readingTime }}</div>
+      {%- if medium %}
+      <div><span class="k">first:</span> <a href="{{ medium }}" rel="noopener">medium.com</a></div>
+      {%- endif %}
+      <div class="mk" aria-hidden="true">---</div>
+    </header>
+    <h1><span class="mk" aria-hidden="true"># </span>{{ title | escape }}</h1>
+{{ content | safe }}
+  </article>
+  <nav class="pager pixel" aria-label="More writing">
+    {% if older %}<a href="{{ older.url }}">◀ {{ older.data.short | upper }}</a>{% else %}<span></span>{% endif %}
+    {% if newer %}<a href="{{ newer.url }}">{{ newer.data.short | upper }} ▶</a>{% else %}<span></span>{% endif %}
+  </nav>
+</main>
+</body>
+</html>

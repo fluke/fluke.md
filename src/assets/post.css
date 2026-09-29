@@ -1,0 +1,133 @@
+/* Posts: the Game Boy screen with the lights down ("LCD night").
+   Markdown source characters stay visible in quiet tones; the Game Boy Color
+   hues mark what they mean. */
+:root {
+  --body: #5b3d9e;
+  --bezel: #333338;
+  --bg: #252c1e;
+  --text: #dde2c9;
+  --head: #f3f5e8;
+  --dim: #6c7654;
+  --rule: #3b452e;
+  --quote: #a9b08f;
+  --led: #e0314a;
+  --c1: #e2484f; --c2: #eea43a; --c3: #e9d34a; --c4: #58b85c; --c5: #4a8fd6; --c6: #a377dc;
+}
+
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body { background: var(--body); color: var(--text); }
+.pixel { font-family: 'Press Start 2P', ui-monospace, monospace; font-weight: 400; }
+
+/* ---------- console chrome ---------- */
+.bar {
+  max-width: 980px; margin: 24px auto 0; padding: 14px 24px;
+  background: var(--bezel); border-radius: 14px 14px 0 0;
+  display: flex; align-items: center; gap: 14px;
+  font-size: 10px; letter-spacing: 1px; color: #c9c7d1;
+}
+.bar .led { width: 9px; height: 9px; border-radius: 50%; background: var(--led); box-shadow: 0 0 8px var(--led); flex-shrink: 0; }
+.bar a { color: #c9c7d1; text-decoration: none; }
+.bar a:hover, .bar a:focus-visible { text-decoration: underline; text-underline-offset: 4px; }
+.bar .crumbs { margin-right: auto; }
+.bar .wm { display: flex; gap: 10px; }
+.bar .wm .name { font-style: italic; }
+.c1 { color: var(--c1); } .c2 { color: var(--c2); } .c3 { color: var(--c3); } .c5 { color: var(--c5); } .c6 { color: var(--c6); }
+
+.screen {
+  max-width: 980px; margin: 0 auto 40px; padding: 56px 24px 40px;
+  background: var(--bg);
+  border: 14px solid var(--bezel); border-top: 0; border-radius: 0 0 60px 14px;
+}
+
+/* ---------- article ---------- */
+article { max-width: 700px; margin: 0 auto; font: 16.5px/1.8 'JetBrains Mono', ui-monospace, monospace; }
+.mk, .url, .fence { user-select: none; }
+.mk { color: var(--dim); }
+
+.fm { color: var(--dim); margin-bottom: 36px; }
+.fm .k { color: var(--c5); }
+.fm time { color: var(--dim); }
+.fm a { color: var(--dim); text-decoration: underline; text-decoration-color: var(--rule); text-underline-offset: 4px; }
+
+h1, h2, h3, h4 { color: var(--head); font-weight: 600; }
+h1 { font-size: 26px; line-height: 1.4; margin: 0 0 32px; }
+h2 { font-size: 19px; line-height: 1.5; margin: 48px 0 14px; }
+h3 { font-size: 17px; line-height: 1.5; margin: 36px 0 12px; }
+h1 .mk, h2 .mk, h3 .mk, h4 .mk { color: var(--c1); }
+
+p { margin: 0 0 22px; }
+strong { color: var(--head); font-weight: 600; }
+strong > .mk { color: var(--c2); }
+em > .mk { color: var(--c2); }
+
+a { color: var(--c5); text-decoration: none; }
+a .mk, a .url { color: var(--dim); }
+a .url { display: inline-block; max-width: 18ch; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; vertical-align: bottom; }
+a:hover .txt, a:focus-visible .txt { text-decoration: underline; text-underline-offset: 4px; }
+a:focus-visible { outline: 2px dashed var(--c5); outline-offset: 3px; }
+
+code { font: inherit; }
+p code, li code, blockquote code { color: var(--c4); }
+code > .mk { color: var(--dim); }
+
+blockquote { margin: 0 0 26px; padding: 0; color: var(--quote); }
+blockquote p { margin-bottom: 12px; }
+blockquote > p > .mk:first-child { color: var(--c3); }
+
+ul, ol { list-style: none; margin: 0 0 22px; padding: 0 0 0 2ch; }
+li { margin: 0 0 6px; text-indent: -2ch; }
+li > .mk:first-child { color: var(--c3); }
+ol li { text-indent: -3ch; padding-left: 1ch; }
+
+hr { display: none; }
+hr + .mk { display: block; margin: 36px 0; }
+
+img { display: block; max-width: 100%; height: auto; margin: 0 0 26px; border: 2px solid var(--rule); }
+figure { margin: 0 0 26px; }
+figure img { margin-bottom: 8px; }
+figcaption { color: var(--dim); font-size: 14px; }
+figcaption::before { content: '↑ '; }
+
+/* ---------- code blocks ---------- */
+.code { margin: 0 0 26px; }
+.code .fence { color: var(--dim); font-size: 15px; line-height: 1.7; }
+.code .lang { color: var(--c4); }
+.code pre {
+  margin: 0; padding: 2px 0 2px 18px; border-left: 2px solid var(--rule);
+  font: 15px/1.7 'JetBrains Mono', ui-monospace, monospace; overflow-x: auto; color: var(--text);
+}
+.token.comment, .token.prolog, .token.doctype, .token.cdata { color: var(--dim); font-style: italic; }
+.token.keyword, .token.boolean, .token.important, .token.atrule { color: #c9a8f5; }
+.token.string, .token.char, .token.attr-value, .token.regex, .token.url { color: var(--c4); }
+.token.symbol, .token.number, .token.constant, .token.variable { color: var(--c2); }
+.token.class-name, .token.builtin, .token.function, .token.tag { color: var(--c5); }
+.token.attr-name, .token.property, .token.key { color: var(--c3); }
+.token.punctuation, .token.operator { color: #aeb595; }
+.token.delimiter, .token.interpolation-punctuation { color: var(--c1); }
+
+/* ---------- pager ---------- */
+.pager {
+  max-width: 700px; margin: 56px auto 0; padding-top: 18px;
+  border-top: 2px dotted var(--rule);
+  display: flex; justify-content: space-between; gap: 16px;
+  font-size: 10px; letter-spacing: 1px; line-height: 1.8;
+}
+.pager a { color: var(--text); }
+.pager a:hover, .pager a:focus-visible { color: var(--head); text-decoration: underline; text-underline-offset: 4px; }
+.pager a:last-child { text-align: right; }
+
+/* Share-image screenshots (?og) */
+.og .pager { display: none; }
+
+/* ---------- phones ---------- */
+@media (max-width: 760px) {
+  .bar { margin-top: 12px; padding: 12px 16px; font-size: 8px; }
+  .bar .wm { display: none; }
+  .screen { border-width: 8px; padding: 32px 16px 32px; border-radius: 0 0 28px 8px; margin-bottom: 16px; }
+  article { font-size: 15px; }
+  h1 { font-size: 21px; }
+  h2 { font-size: 17px; }
+  .code pre, .code .fence { font-size: 13px; }
+  .pager { font-size: 8px; }
+}

@@ -1,0 +1,35 @@
+---
+layout: layouts/base.njk
+title: Kartik Luke Singh
+---
+        <div class="home">
+          <div class="intro">
+            <div class="title"><h1 class="pixel">KARTIK LUKE SINGH</h1><div class="cursor blink" aria-hidden="true"></div></div>
+            <div class="role">Co-founder &amp; CTO, <a href="https://artossoftware.com">Artos Software</a></div>
+            <p class="lead">I build Shopify apps. At <a href="https://artossoftware.com">Artos Software</a> we make STOQ, Filemonk and Invoice Falcon, used by tens of thousands of merchants.</p>
+            <p class="lead">Before this I co-founded <a href="/jobspire/">Jobspire</a> in college and led engineering teams at a few startups. I live in Bangalore and I'm a dad to two dogs.</p>
+            <nav class="links pixel" aria-label="Elsewhere">{% for l in site.links %}<a href="{{ l.href }}"{% if l.href.startsWith('http') %} rel="me noopener"{% endif %}>{{ l.label }}</a>{% if not loop.last %} · {% endif %}{% endfor %}</nav>
+            <div class="keys pixel muted" aria-hidden="true">↑↓ SELECT · A OPEN · B BACK</div>
+            <div class="foot muted">© 2026 KARTIK LUKE SINGH</div>
+          </div>
+          <div class="lists">
+            <section>
+              <h2 class="pixel">NOW</h2>
+              <ul class="menu">
+{%- for p in projects %}{% if p.menu %}
+            {% set item = { href: "/" + p.slug + "/", name: p.name, sub: p.menu } %}{% include "menu-item.njk" %}
+{%- endif %}{% endfor %}
+              </ul>
+            </section>
+            <section>
+              <h2 class="pixel"><a href="/writing/">WRITING</a></h2>
+              <ul class="menu posts">
+{%- for post in collections.posts %}{% if post.data.featured %}
+            {% set item = { href: post.url, name: post.data.short, sub: (post.date | year) + " · " + (post.data.tags | topics | first | upper) } %}{% include "menu-item.njk" %}
+{%- endif %}{% endfor %}
+              </ul>
+              <a class="more pixel" href="/writing/">MORE ▶</a>
+            </section>
+            <div class="foot-mobile muted">© 2026 KARTIK LUKE SINGH</div>
+          </div>
+        </div>

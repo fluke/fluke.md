@@ -1,0 +1,23 @@
+---
+layout: layouts/base.njk
+title: Writing
+description: Engineering notes by Kartik Luke Singh on Shopify apps, Rails and developer tooling.
+---
+        <nav class="crumbs pixel" aria-label="Breadcrumb">
+          <a href="/">◀ HOME</a>
+          <span class="here">WRITING</span>
+        </nav>
+        <div class="writing" style="display:flex;flex-direction:column;gap:24px">
+          <h1 class="pixel">WRITING</h1>
+          <ul class="menu posts">
+{%- for post in collections.posts %}
+            {% set item = { href: post.url, name: post.data.title, sub: (post.date | displayDate) + " · " + (post.data.tags | topics | join(", ") | upper) } %}{% include "menu-item.njk" %}
+{%- endfor %}
+          </ul>
+          <h2 class="pixel archive-head">STILL ON MEDIUM</h2>
+          <ul class="menu posts">
+{%- for a in archive %}
+            {% set item = { href: a.href, name: a.title, sub: a.date + " · MEDIUM", ext: true } %}{% include "menu-item.njk" %}
+{%- endfor %}
+          </ul>
+        </div>
