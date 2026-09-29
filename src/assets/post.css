@@ -42,7 +42,7 @@ body { background: var(--body); color: var(--text); }
 
 /* ---------- article ---------- */
 article { max-width: 700px; margin: 0 auto; font: 16.5px/1.8 'JetBrains Mono', ui-monospace, monospace; }
-.mk, .url, .fence { user-select: none; }
+.mk, .fence { user-select: none; }
 .mk { color: var(--dim); }
 
 .fm { color: var(--dim); margin-bottom: 36px; }
@@ -62,8 +62,7 @@ strong > .mk { color: var(--c2); }
 em > .mk { color: var(--c2); }
 
 a { color: var(--c5); text-decoration: none; }
-a .mk, a .url { color: var(--dim); }
-a .url { display: inline-block; max-width: 18ch; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; vertical-align: bottom; }
+a .mk { color: var(--dim); }
 a:hover .txt, a:focus-visible .txt { text-decoration: underline; text-underline-offset: 4px; }
 a:focus-visible { outline: 2px dashed var(--c5); outline-offset: 3px; }
 

@@ -27,14 +27,10 @@ function visibleMarkdown(md) {
 
   r.link_open = (tokens, idx, opts, env, self) => {
     const href = tokens[idx].attrGet("href") || "";
-    (env.linkStack ||= []).push(href);
     if (/^https?:/.test(href) && !href.startsWith(SITE)) tokens[idx].attrSet("rel", "noopener");
     return self.renderToken(tokens, idx, opts) + mk("[") + '<span class="txt">';
   };
-  r.link_close = (tokens, idx, opts, env) => {
-    const href = env.linkStack.pop();
-    return `</span>${mk("](")}<span class="url" aria-hidden="true">${escape(href)}</span>${mk(")")}</a>`;
-  };
+  r.link_close = () => `</span>${mk("]")}</a>`;
 
   r.blockquote_open = (tokens, idx, opts, env, self) => {
     env.quoteDepth = (env.quoteDepth || 0) + 1;
@@ -117,7 +113,6 @@ export default function (eleventyConfig) {
   eleventyConfig.addFilter("stripMarkers", (html) =>
     String(html)
       .replace(/<span class="mk" aria-hidden="true">.*?<\/span>/g, "")
-      .replace(/<span class="url" aria-hidden="true">.*?<\/span>/g, "")
       .replace(/<div class="fence" aria-hidden="true">.*?<\/div>/g, "")
   );
   eleventyConfig.addFilter("json", (v) => JSON.stringify(v));

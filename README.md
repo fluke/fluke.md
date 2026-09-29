@@ -31,7 +31,7 @@ Drafts show a DRAFT banner and `[DRAFT]` in the writing list locally. Mark unfin
 
 Images go in `src/assets/posts/<post>/` and are referenced as `/assets/posts/<post>/file.png`. Use `![alt text](/path "caption")` for a captioned figure.
 
-Posts render with the Markdown characters visible (`#`, `**`, `` ` ``, `[text](url)`, fences) in the "LCD night" style; see `visibleMarkdown` in `eleventy.config.js` and `src/assets/post.css`.
+Posts render with the Markdown characters visible (`#`, `**`, `` ` ``, `[links]`, fences) in the "LCD night" style; see `visibleMarkdown` in `eleventy.config.js` and `src/assets/post.css`.
 
 ## Local development
 
