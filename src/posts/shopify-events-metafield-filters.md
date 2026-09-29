@@ -1,6 +1,6 @@
 ---
 title: "Shopify Events and metafields: only hearing about the updates you care about"
-short: Only the updates you care about
+short: Filtering Shopify Events with metafields
 description: How we went from about 4.5 million orders/updated webhooks a day to under 300,000, by marking the orders we care about with a metafield and letting a filtered Shopify Events subscription do the rest.
 date: 2026-09-29
 tags: [shopify, events, rails]
