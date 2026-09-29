@@ -89,12 +89,6 @@ end
 
 Steps 2 and 3 run at least five minutes apart, because our feature flags are cached for five minutes. Flip both at once and one worker can skip the webhook while another still ignores the Events delivery.
 
-## How do you mark the orders you already have?
-
-The cart only marks new orders, so every shop's existing active orders needed the marker before it could switch. We add it with `orderUpdate`, as a bulk operation instead of one call per order: each write becomes a line in a JSONL file, and `bulkOperationRunMutation` runs the whole file as a single mutation.
-
-Bulk operations aren't rate-limited like ordinary Admin API calls, so marking a shop's orders doesn't burn its API budget at the exact moment you enrol it. We drained about 183,000 active orders across 366 shops in a day, and only confirmed a write from a success line in the results file.
-
 ## What bit us?
 
 The dangerous ones failed silently and looked like success until we compared counts.
