@@ -102,6 +102,18 @@ figcaption::before { content: '↑ '; }
 .chart .mark-n { fill: var(--bg); font: 600 11px 'JetBrains Mono', ui-monospace, monospace; }
 figcaption code { color: var(--c4); }
 
+.flow svg { display: block; width: 100%; height: auto; margin-bottom: 8px; }
+.flow .node { fill: none; stroke: var(--c5); stroke-width: 1.5; }
+.flow .node.dim { stroke: var(--dim); stroke-dasharray: 4 3; }
+.flow .group { fill: #2b3323; stroke: var(--dim); stroke-dasharray: 4 4; }
+.flow .arrow { stroke: var(--text); stroke-width: 1.5; }
+.flow .arrow.dim { stroke: var(--dim); }
+.flow .ahead { fill: var(--text); }
+.flow-t { fill: var(--text); font: 13px 'JetBrains Mono', ui-monospace, monospace; }
+.flow-t.dim { fill: var(--dim); }
+.flow-l { fill: var(--c1); font: 11px 'Press Start 2P', ui-monospace, monospace; letter-spacing: 1px; }
+.flow-g { fill: var(--c4); font: 12px 'JetBrains Mono', ui-monospace, monospace; }
+
 /* ---------- code blocks ---------- */
 .code { margin: 0 0 26px; }
 .code .fence { color: var(--dim); font-size: 15px; line-height: 1.7; }
@@ -150,4 +162,6 @@ figcaption code { color: var(--c4); }
   h2 { font-size: 17px; }
   .code pre, .code .fence { font-size: 13px; }
   .pager { font-size: 8px; }
+  .chart, .flow { overflow-x: auto; }
+  .chart svg, .flow svg { min-width: 560px; }
 }
