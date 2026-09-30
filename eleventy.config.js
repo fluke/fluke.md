@@ -1,5 +1,6 @@
 import rssPlugin from "@11ty/eleventy-plugin-rss";
 import syntaxHighlight from "@11ty/eleventy-plugin-syntaxhighlight";
+import footnote from "markdown-it-footnote";
 
 const SITE = "https://fluke.md";
 
@@ -51,6 +52,19 @@ function visibleMarkdown(md) {
 
   r.hr = () => `<hr>${mk("---")}`;
 
+  // Footnotes read as `[^1]` in the text and `[^1]: …` in the list at the end.
+  r.footnote_ref = (tokens, idx, opts, env, self) => {
+    const n = self.rules.footnote_anchor_name(tokens, idx, opts, env, self);
+    const sub = tokens[idx].meta.subId > 0 ? `:${tokens[idx].meta.subId}` : "";
+    return `<sup class="fn"><a href="#fn${n}" id="fnref${n}${sub}">${mk("[^")}${n}${mk("]")}</a></sup>`;
+  };
+  r.footnote_block_open = () => '<section class="footnotes" aria-label="Footnotes">\n<ol>\n';
+  r.footnote_block_close = () => "</ol>\n</section>\n";
+  r.footnote_open = (tokens, idx, opts, env, self) => {
+    const n = self.rules.footnote_anchor_name(tokens, idx, opts, env, self);
+    return `<li id="fn${n}">${mk(`[^${n}]: `)}`;
+  };
+
   r.image = (tokens, idx) => {
     const t = tokens[idx];
     const src = t.attrGet("src");
@@ -75,7 +89,10 @@ function visibleMarkdown(md) {
 export default function (eleventyConfig) {
   eleventyConfig.addPlugin(rssPlugin);
   eleventyConfig.addPlugin(syntaxHighlight);
-  eleventyConfig.amendLibrary("md", visibleMarkdown);
+  eleventyConfig.amendLibrary("md", (md) => {
+    md.use(footnote);
+    visibleMarkdown(md);
+  });
 
   // `draft: true` posts render under `npm start` (or DRAFTS=1) and are left out
   // of production builds entirely: no page, no feed entry, no sitemap line.

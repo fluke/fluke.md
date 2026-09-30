@@ -68,6 +68,7 @@ a:focus-visible { outline: 2px dashed var(--c5); outline-offset: 3px; }
 
 code { font: inherit; }
 p code, li code, blockquote code { color: var(--c4); }
+a code, p a code, li a code { color: var(--c5); }
 code > .mk { color: var(--dim); }
 
 blockquote { margin: 0 0 26px; padding: 0; color: var(--quote); }
@@ -87,6 +88,18 @@ figure { margin: 0 0 26px; }
 figure img { margin-bottom: 8px; }
 figcaption { color: var(--dim); font-size: 14px; }
 figcaption::before { content: '↑ '; }
+
+/* ---------- footnotes ---------- */
+sup.fn { line-height: 0; }
+sup.fn a { color: var(--c3); font-size: .8em; }
+sup.fn a:hover, sup.fn a:focus-visible { text-decoration: underline; text-underline-offset: 3px; }
+.footnotes { margin: 44px 0 0; padding-top: 18px; border-top: 2px dotted var(--rule); font-size: 14px; color: var(--quote); }
+.footnotes ol { padding: 0; margin: 0; }
+.footnotes li { text-indent: 0; padding: 4px 6px; margin: 0 0 6px; }
+.footnotes li > .mk:first-child { color: var(--c3); }
+.footnotes li p { display: inline; margin: 0; }
+.footnotes li:target { background: #2b3323; }
+.footnote-backref { color: var(--dim); }
 
 /* ---------- charts ---------- */
 .chart svg { display: block; width: 100%; height: auto; margin-bottom: 8px; }

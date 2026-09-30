@@ -29,6 +29,8 @@ code
 
 Drafts show a DRAFT banner and `[DRAFT]` in the writing list locally. Mark unfinished bits with `<span class="todo">TODO: …</span>`; they render in orange. Delete `draft: true` (and set the date) to publish.
 
+Footnotes use standard Markdown: `text[^name]` in the body and `[^name]: …` at the end. They render as numbered `[^1]` markers with a list at the bottom of the post.
+
 Images go in `src/assets/posts/<post>/` and are referenced as `/assets/posts/<post>/file.png`. Use `![alt text](/path "caption")` for a captioned figure.
 
 Posts render with the Markdown characters visible (`#`, `**`, `` ` ``, `[links]`, fences) in the "LCD night" style; see `visibleMarkdown` in `eleventy.config.js` and `src/assets/post.css`.

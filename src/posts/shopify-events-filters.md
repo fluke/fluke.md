@@ -7,7 +7,7 @@ tags: [shopify, events, rails]
 featured: true
 ---
 
-At [Artos Software](https://artossoftware.com) we build [STOQ](https://www.stoqapp.com), a Shopify app for pre-orders and back-in-stock alerts. To keep pre-orders and alert-driven orders in sync, we listened to the `orders/updated` webhook. The trouble is that Shopify sends that webhook for every change to every order on a shop, and we only care about a sliver of them. So we moved to Shopify's Events subscriptions, which run a GraphQL query for each change and can filter deliveries based on the response, and let Shopify throw away the rest before it ever reaches us.
+At [Artos Software](https://artossoftware.com) we build [STOQ](https://www.stoqapp.com), a Shopify app for pre-orders and back-in-stock alerts. To keep pre-orders and alert-driven orders in sync, we listened to the `orders/updated` webhook. The trouble is that Shopify sends that webhook for every change to every order on a shop, and we only care about a sliver of them. So we moved to Shopify's Events subscriptions,[^events] which run a GraphQL query for each change and can filter deliveries based on the response, and let Shopify throw away the rest before it ever reaches us.
 
 ## Why were we getting 6 million webhooks a day?
 
@@ -17,7 +17,7 @@ What we actually need are the orders our app created or touched, mostly pre-orde
 
 ## So how do you tell Shopify which updates you care about?
 
-You mark them, so the marker shows up in the response you filter on. When a buyer adds one of our pre-orders to their cart, we set an attribute on the cart with the Storefront API:
+You mark them, so the marker shows up in the response you filter on. When a buyer adds one of our pre-orders to their cart, we set an attribute on the cart with the Storefront API:[^cart]
 
 ```graphql
 mutation markCart($cartId: ID!) {
@@ -31,11 +31,11 @@ mutation markCart($cartId: ID!) {
 }
 ```
 
-Shopify copies cart attributes onto the order it creates, as the order's custom attributes, so every order that came through our flow arrives already marked.
+Shopify copies cart attributes onto the order it creates, as the order's custom attributes,[^attrs] so every order that came through our flow arrives already marked.
 
 ## How do you subscribe to just those updates?
 
-With an `[[events.subscription]]` block in `shopify.app.toml`. Shopify runs the GraphQL query for each order change, applies the `query_filter` to the response, and only delivers when it matches:
+With an `[[events.subscription]]` block in `shopify.app.toml`. Shopify runs the GraphQL query for each order change,[^structure] applies the `query_filter` to the response,[^filter] and only delivers when it matches:
 
 ```toml
 [[events.subscription]]
@@ -107,3 +107,9 @@ Order-update jobs fell from about 6 million a day on average to under 500,000, a
 <figure class="chart"><svg viewBox="0 0 700 322" role="img" aria-label="orders/updated per day, 16 to 30 September. Webhooks run 6.5 to 7.2 million on weekdays and dip at weekends, then fall from 6.48 million on 25 September to about 250 thousand by 29 and 30 September. Events processed rises from nearly zero to about 200 thousand."><rect class="wkend" x="174.8" y="50" width="44.3" height="240"/><rect class="wkend" x="219.0" y="50" width="44.3" height="240"/><rect class="wkend" x="484.8" y="50" width="44.3" height="240"/><rect class="wkend" x="529.0" y="50" width="44.3" height="240"/><line class="grid" x1="64" y1="290" x2="684" y2="290"/><text class="axis" x="54" y="294" text-anchor="end">0M</text><line class="grid" x1="64" y1="230" x2="684" y2="230"/><text class="axis" x="54" y="234" text-anchor="end">2M</text><line class="grid" x1="64" y1="170" x2="684" y2="170"/><text class="axis" x="54" y="174" text-anchor="end">4M</text><line class="grid" x1="64" y1="110" x2="684" y2="110"/><text class="axis" x="54" y="114" text-anchor="end">6M</text><line class="grid" x1="64" y1="50" x2="684" y2="50"/><text class="axis" x="54" y="54" text-anchor="end">8M</text><line class="mark" x1="196.9" y1="50" x2="196.9" y2="290"/><circle class="mark-dot" cx="196.9" cy="42" r="9"/><text class="mark-n" x="196.9" y="46" text-anchor="middle">1</text><line class="mark" x1="506.9" y1="50" x2="506.9" y2="290"/><circle class="mark-dot" cx="506.9" cy="42" r="9"/><text class="mark-n" x="506.9" y="46" text-anchor="middle">2</text><line class="mark" x1="595.4" y1="50" x2="595.4" y2="290"/><circle class="mark-dot" cx="595.4" cy="42" r="9"/><text class="mark-n" x="595.4" y="46" text-anchor="middle">3</text><polygon class="area" points="64.0,74.3 108.3,80.9 152.6,86.9 196.9,114.5 241.1,177.5 285.4,96.8 329.7,89.6 374.0,87.8 418.3,90.2 462.6,95.6 506.9,186.2 551.1,255.8 595.4,269.7 639.7,282.4 684.0,282.4 684.0,290 64.0,290"/><polyline class="line web" points="64.0,74.3 108.3,80.9 152.6,86.9 196.9,114.5 241.1,177.5 285.4,96.8 329.7,89.6 374.0,87.8 418.3,90.2 462.6,95.6 506.9,186.2 551.1,255.8 595.4,269.7 639.7,282.4 684.0,282.4"/><polyline class="line evp" points="64.0,290.0 108.3,290.0 152.6,290.0 196.9,290.0 241.1,290.0 285.4,289.8 329.7,289.8 374.0,289.7 418.3,289.7 462.6,289.4 506.9,288.9 551.1,287.7 595.4,284.8 639.7,283.8 684.0,283.8"/><text class="axis" x="64.0" y="312" text-anchor="middle">16</text><text class="axis" x="108.3" y="312" text-anchor="middle">17</text><text class="axis" x="152.6" y="312" text-anchor="middle">18</text><text class="axis" x="196.9" y="312" text-anchor="middle">19</text><text class="axis" x="241.1" y="312" text-anchor="middle">20</text><text class="axis" x="285.4" y="312" text-anchor="middle">21</text><text class="axis" x="329.7" y="312" text-anchor="middle">22</text><text class="axis" x="374.0" y="312" text-anchor="middle">23</text><text class="axis" x="418.3" y="312" text-anchor="middle">24</text><text class="axis" x="462.6" y="312" text-anchor="middle">25</text><text class="axis" x="506.9" y="312" text-anchor="middle">26</text><text class="axis" x="551.1" y="312" text-anchor="middle">27</text><text class="axis" x="595.4" y="312" text-anchor="middle">28</text><text class="axis" x="639.7" y="312" text-anchor="middle">29</text><text class="axis" x="684.0" y="312" text-anchor="middle">30</text><line class="line web" x1="64" y1="14" x2="86" y2="14"/><text class="axis" x="94" y="18">webhooks</text><line class="line evp" x1="214" y1="14" x2="236" y2="14"/><text class="axis" x="244" y="18">Events processed</text></svg><figcaption><code>orders/updated</code> per day, 16–30 September. Shaded columns are weekends. ① first shops cut over · ② the rest of the fleet · ③ old webhook subscriptions deleted.</figcaption></figure>
 
 And that covers moving `orders/updated` to Events. Inventory and product updates are next, with the same pattern. If you're doing something similar, or want to compare notes, say hi on [X](https://x.com/0xfluke).
+
+[^events]: [About Events and webhooks](https://shopify.dev/docs/apps/build/events-webhooks), and the [Events API reference](https://shopify.dev/docs/api/events/latest).
+[^cart]: [`cartAttributesUpdate`](https://shopify.dev/docs/api/storefront/latest/mutations/cartAttributesUpdate) in the Storefront API.
+[^attrs]: [`Order.customAttributes`](https://shopify.dev/docs/api/admin-graphql/latest/objects/Order) in the Admin API.
+[^structure]: [Events delivery structure](https://shopify.dev/docs/apps/build/events/delivery-structure): how the changed IDs become your query's variables.
+[^filter]: [Filter Events deliveries](https://shopify.dev/docs/apps/build/events/delivery-filtering): `query_filter` syntax and limits.
