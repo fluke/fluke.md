@@ -31,11 +31,11 @@ mutation markCart($cartId: ID!) {
 }
 ```
 
-Shopify copies cart attributes onto the order it creates, as the order's [custom attributes](https://shopify.dev/docs/api/admin-graphql/latest/objects/Order), so every order that came through our flow arrives already marked.
+Shopify copies cart attributes onto the order it creates, as the order's custom attributes, so every order that came through our flow arrives already marked.
 
 ## How do you subscribe to just those updates?
 
-With an `[[events.subscription]]` block in `shopify.app.toml`. Shopify [runs the GraphQL query](https://shopify.dev/docs/apps/build/events/delivery-structure) for each order change, [applies the `query_filter`](https://shopify.dev/docs/apps/build/events/delivery-filtering) to the response, and only delivers when it matches:
+With an `[[events.subscription]]` block in `shopify.app.toml`. Shopify runs the GraphQL query for each order change, applies the `query_filter` to the response, and only delivers when it matches:[^subscribe]
 
 ```toml
 [[events.subscription]]
@@ -109,3 +109,4 @@ Order-update jobs fell from about 6 million a day on average to under 500,000, a
 And that covers moving `orders/updated` to Events. Inventory and product updates are next, with the same pattern. If you're doing something similar, or want to compare notes, say hi on [X](https://x.com/0xfluke).
 
 [^events]: [About Events and webhooks](https://shopify.dev/docs/apps/build/events-webhooks), and the [Events API reference](https://shopify.dev/docs/api/events/latest).
+[^subscribe]: [Events delivery structure](https://shopify.dev/docs/apps/build/events/delivery-structure) and [Filter Events deliveries](https://shopify.dev/docs/apps/build/events/delivery-filtering).
