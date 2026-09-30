@@ -1,7 +1,7 @@
 ---
 title: "Shopify Events: only hearing about the updates you care about"
 short: Filtering Shopify Events to what you need
-description: How we went from about 4.5 million orders/updated webhooks a day to under 300,000, by marking the orders we care about and letting a filtered Shopify Events subscription do the rest.
+description: How we went from about 6 million orders/updated webhooks a day on average to under 500,000, by marking the orders we care about and letting a filtered Shopify Events subscription do the rest.
 date: 2026-09-29
 tags: [shopify, events, rails]
 featured: true
@@ -9,7 +9,7 @@ featured: true
 
 At [Artos Software](https://artossoftware.com) we build [STOQ](https://www.stoqapp.com), a Shopify app for pre-orders and back-in-stock alerts. To keep pre-orders and alert-driven orders in sync, we listened to the `orders/updated` webhook. The trouble is that Shopify sends that webhook for every change to every order on a shop, and we only care about a sliver of them. So we moved to Shopify's Events subscriptions, which run a GraphQL query for each change and can filter deliveries based on the response, and let Shopify throw away the rest before it ever reaches us.
 
-## Why were we getting 4 million webhooks a day?
+## Why were we getting 6 million webhooks a day?
 
 A webhook subscription can't filter by order. Every edit, tag, fulfilment and refund on every order became a delivery, a queued job, and a database lookup that usually found nothing and returned. Roughly 350 of our largest shops sent over 60% of that traffic. A busy merchant working through orders all day generated millions of jobs that ended in "not ours". And that's just the average. Plenty of merchants use bulk-editing apps to tag or update thousands of orders at once, and every one of those edits is another webhook, so a single run can send the count spiking well past it.
 
@@ -60,6 +60,11 @@ query_filter = "order.customAttributes.key:'_tracked_by_stoq'"
 
 Shopify evaluates the filter on its side, so an unmarked order never leaves Shopify. Deliveries come through Amazon EventBridge into SQS, and a small translator turns each one back into the shape `orders/updated` had, so the existing worker barely changed.
 
+```text
+before: order change → webhook → queue → worker → "not ours"
+after:  order change → query → filter → marked only → worker
+```
+
 Two rules we learned the hard way:
 
 - The filter only sees the response, so whatever you filter on has to be **selected** in the query.
@@ -100,6 +105,8 @@ The dangerous ones failed silently and looked like success until we compared cou
 
 ## Did it work?
 
-Order-update jobs fell from about 4.5 million a day to under 300,000, a drop of over 90%, and what's left is mostly orders we actually care about. The volume now scales with our pre-orders, not the merchant's whole order backlog. An hourly reconciler, searching for the same marker, catches the few changes Events has no trigger for yet.
+Order-update jobs fell from about 6 million a day on average to under 500,000, a drop of over 90%, and what's left is mostly orders we actually care about. The volume now scales with our pre-orders, not the merchant's whole order backlog. An hourly reconciler, searching for the same marker, catches the few changes Events has no trigger for yet.
+
+<figure class="chart"><svg viewBox="0 0 700 322" role="img" aria-label="orders/updated per day, 16 to 30 September. Webhooks run 6.5 to 7.2 million on weekdays and dip at weekends, then fall from 6.48 million on 25 September to about 250 thousand by 29 and 30 September. Events deliveries stay between 0.3 and 0.9 million, with one spike of 1.3 million on 19 September. Events processed rises from nearly zero to about 200 thousand."><rect class="wkend" x="174.8" y="50" width="44.3" height="240"/><rect class="wkend" x="219.0" y="50" width="44.3" height="240"/><rect class="wkend" x="484.8" y="50" width="44.3" height="240"/><rect class="wkend" x="529.0" y="50" width="44.3" height="240"/><line class="grid" x1="64" y1="290" x2="684" y2="290"/><text class="axis" x="54" y="294" text-anchor="end">0M</text><line class="grid" x1="64" y1="230" x2="684" y2="230"/><text class="axis" x="54" y="234" text-anchor="end">2M</text><line class="grid" x1="64" y1="170" x2="684" y2="170"/><text class="axis" x="54" y="174" text-anchor="end">4M</text><line class="grid" x1="64" y1="110" x2="684" y2="110"/><text class="axis" x="54" y="114" text-anchor="end">6M</text><line class="grid" x1="64" y1="50" x2="684" y2="50"/><text class="axis" x="54" y="54" text-anchor="end">8M</text><line class="mark" x1="196.9" y1="50" x2="196.9" y2="290"/><circle class="mark-dot" cx="196.9" cy="42" r="9"/><text class="mark-n" x="196.9" y="46" text-anchor="middle">1</text><line class="mark" x1="506.9" y1="50" x2="506.9" y2="290"/><circle class="mark-dot" cx="506.9" cy="42" r="9"/><text class="mark-n" x="506.9" y="46" text-anchor="middle">2</text><line class="mark" x1="595.4" y1="50" x2="595.4" y2="290"/><circle class="mark-dot" cx="595.4" cy="42" r="9"/><text class="mark-n" x="595.4" y="46" text-anchor="middle">3</text><polygon class="area" points="64.0,74.3 108.3,80.9 152.6,86.9 196.9,114.5 241.1,177.5 285.4,96.8 329.7,89.6 374.0,87.8 418.3,90.2 462.6,95.6 506.9,186.2 551.1,255.8 595.4,269.7 639.7,282.4 684.0,282.4 684.0,290 64.0,290"/><polyline class="line web" points="64.0,74.3 108.3,80.9 152.6,86.9 196.9,114.5 241.1,177.5 285.4,96.8 329.7,89.6 374.0,87.8 418.3,90.2 462.6,95.6 506.9,186.2 551.1,255.8 595.4,269.7 639.7,282.4 684.0,282.4"/><polyline class="line evd" points="64.0,288.4 108.3,287.2 152.6,284.5 196.9,250.4 241.1,279.9 285.4,277.0 329.7,277.6 374.0,275.3 418.3,276.2 462.6,270.7 506.9,276.4 551.1,278.9 595.4,262.0 639.7,269.7 684.0,269.7"/><polyline class="line evp" points="64.0,290.0 108.3,290.0 152.6,290.0 196.9,290.0 241.1,290.0 285.4,289.8 329.7,289.8 374.0,289.7 418.3,289.7 462.6,289.4 506.9,288.9 551.1,287.7 595.4,284.8 639.7,283.8 684.0,283.8"/><text class="axis" x="64.0" y="312" text-anchor="middle">16</text><text class="axis" x="108.3" y="312" text-anchor="middle">17</text><text class="axis" x="152.6" y="312" text-anchor="middle">18</text><text class="axis" x="196.9" y="312" text-anchor="middle">19</text><text class="axis" x="241.1" y="312" text-anchor="middle">20</text><text class="axis" x="285.4" y="312" text-anchor="middle">21</text><text class="axis" x="329.7" y="312" text-anchor="middle">22</text><text class="axis" x="374.0" y="312" text-anchor="middle">23</text><text class="axis" x="418.3" y="312" text-anchor="middle">24</text><text class="axis" x="462.6" y="312" text-anchor="middle">25</text><text class="axis" x="506.9" y="312" text-anchor="middle">26</text><text class="axis" x="551.1" y="312" text-anchor="middle">27</text><text class="axis" x="595.4" y="312" text-anchor="middle">28</text><text class="axis" x="639.7" y="312" text-anchor="middle">29</text><text class="axis" x="684.0" y="312" text-anchor="middle">30</text><line class="line web" x1="64" y1="14" x2="86" y2="14"/><text class="axis" x="94" y="18">webhooks</text><line class="line evd" x1="214" y1="14" x2="236" y2="14"/><text class="axis" x="244" y="18">Events deliveries</text><line class="line evp" x1="424" y1="14" x2="446" y2="14"/><text class="axis" x="454" y="18">Events processed</text></svg><figcaption><code>orders/updated</code> per day, 16–30 September. Shaded columns are weekends. ① first shops cut over · ② the rest of the fleet · ③ old webhook subscriptions deleted.</figcaption></figure>
 
 And that covers moving `orders/updated` to Events. Inventory and product updates are next, with the same pattern. If you're doing something similar, or want to compare notes, say hi on [X](https://x.com/0xfluke).

@@ -88,6 +88,21 @@ figure img { margin-bottom: 8px; }
 figcaption { color: var(--dim); font-size: 14px; }
 figcaption::before { content: '↑ '; }
 
+/* ---------- charts ---------- */
+.chart svg { display: block; width: 100%; height: auto; margin-bottom: 8px; }
+.chart .grid { stroke: var(--rule); stroke-width: 1; }
+.chart .axis { fill: var(--dim); font: 12px 'JetBrains Mono', ui-monospace, monospace; }
+.chart .area { fill: var(--c5); opacity: .14; }
+.chart .line { fill: none; stroke: var(--c5); stroke-width: 2.5; stroke-linejoin: round; }
+.chart .wkend { fill: #2b3323; }
+.chart .line.web { stroke: var(--c5); }
+.chart .line.evd { stroke: var(--c4); }
+.chart .line.evp { stroke: var(--c3); stroke-dasharray: 5 4; }
+.chart .mark { stroke: var(--dim); stroke-dasharray: 2 3; }
+.chart .mark-dot { fill: var(--c1); }
+.chart .mark-n { fill: var(--bg); font: 600 11px 'JetBrains Mono', ui-monospace, monospace; }
+figcaption code { color: var(--c4); }
+
 /* ---------- code blocks ---------- */
 .code { margin: 0 0 26px; }
 .code .fence { color: var(--dim); font-size: 15px; line-height: 1.7; }
