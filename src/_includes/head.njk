@@ -28,3 +28,18 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <script>if (/[?&]og\b/.test(location.search)) document.documentElement.classList.add('og');</script>
+{%- if site.analyticsId %}
+<script>
+  // Google Analytics on the live site only (not local previews or share-image screenshots).
+  if (location.hostname === "fluke.md" && !/[?&]og\b/.test(location.search)) {
+    var ga = document.createElement("script");
+    ga.async = true;
+    ga.src = "https://www.googletagmanager.com/gtag/js?id={{ site.analyticsId }}";
+    document.head.appendChild(ga);
+    window.dataLayer = window.dataLayer || [];
+    window.gtag = function () { dataLayer.push(arguments); };
+    gtag("js", new Date());
+    gtag("config", "{{ site.analyticsId }}");
+  }
+</script>
+{%- endif %}

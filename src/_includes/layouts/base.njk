@@ -5,6 +5,11 @@
 <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/assets/style.css?v={{ build.version }}">
 <script src="/assets/nav.js?v={{ build.version }}" defer></script>
+{%- if page.url == "/" %}
+<script type="application/ld+json">{{ site | personJsonLd | safe }}</script>
+{%- elif p and (p | projectJsonLd) %}
+<script type="application/ld+json">{{ p | projectJsonLd | safe }}</script>
+{%- endif %}
 </head>
 <body>
 <div class="console">

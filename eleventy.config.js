@@ -133,6 +133,54 @@ export default function (eleventyConfig) {
       .replace(/<div class="fence" aria-hidden="true">.*?<\/div>/g, "")
   );
   eleventyConfig.addFilter("json", (v) => JSON.stringify(v));
+  // Structured data for search engines and agents: who Kartik is, and what each project is.
+  const PERSON_ID = `${SITE}/#person`;
+  const ARTOS = { "@type": "Organization", "@id": `${SITE}/artos/#org`, name: "Artos Software", url: "https://artossoftware.com" };
+  const ld = (obj) => JSON.stringify(obj).replace(/</g, "\\u003c");
+  eleventyConfig.addFilter("personJsonLd", (site) =>
+    ld({
+      "@context": "https://schema.org",
+      "@graph": [
+        { "@type": "WebSite", "@id": `${SITE}/#site`, url: `${SITE}/`, name: site.name, publisher: { "@id": PERSON_ID } },
+        {
+          "@type": "Person",
+          "@id": PERSON_ID,
+          name: site.name,
+          alternateName: "fluke",
+          url: `${SITE}/`,
+          jobTitle: "Co-founder and CTO",
+          worksFor: ARTOS,
+          address: { "@type": "PostalAddress", addressLocality: "Bengaluru", addressCountry: "IN" },
+          alumniOf: { "@type": "CollegeOrUniversity", name: "Manipal Institute of Technology" },
+          knowsAbout: ["Shopify app development", "Ruby on Rails", "Shopify APIs", "E-commerce software"],
+          sameAs: [
+            "https://github.com/fluke",
+            "https://x.com/0xfluke",
+            "https://www.linkedin.com/in/kartikluke/",
+            "https://medium.com/@kartikluke",
+          ],
+        },
+      ],
+    })
+  );
+  eleventyConfig.addFilter("projectJsonLd", (p) => {
+    const url = `${SITE}/${p.slug}/`;
+    if (p.slug === "artos")
+      return ld({ "@context": "https://schema.org", ...ARTOS, description: p.desc, founder: { "@id": PERSON_ID }, sameAs: ["https://artossoftware.com"] });
+    if (!p.app) return "";
+    return ld({
+      "@context": "https://schema.org",
+      "@type": "SoftwareApplication",
+      name: p.name,
+      url,
+      sameAs: p.out.map((o) => o[0]),
+      description: p.desc,
+      applicationCategory: "BusinessApplication",
+      operatingSystem: "Shopify",
+      publisher: ARTOS,
+      creator: { "@id": PERSON_ID },
+    });
+  });
   eleventyConfig.addFilter("postIndex", (posts, url) => posts.findIndex((p) => p.url === url));
   eleventyConfig.addFilter("topics", (tags = []) => tags.filter((t) => t !== "posts"));
   eleventyConfig.addFilter("postJsonLd", (data) =>
@@ -144,7 +192,7 @@ export default function (eleventyConfig) {
       datePublished: data.page.date.toISOString().slice(0, 10),
       url: SITE + data.page.url,
       image: `${SITE}/assets/og/${data.page.url.replace(/^\/|\/$/g, "").replace(/\//g, "-")}.png`,
-      author: { "@type": "Person", name: "Kartik Luke Singh", url: SITE + "/" },
+      author: { "@type": "Person", "@id": `${SITE}/#person`, name: "Kartik Luke Singh", url: SITE + "/" },
       keywords: (data.tags || []).filter((t) => t !== "posts").join(", "),
     }).replace(/</g, "\\u003c")
   );

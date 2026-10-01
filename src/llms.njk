@@ -1,0 +1,34 @@
+---
+permalink: /llms.txt
+eleventyExcludeFromCollections: true
+---
+# {{ site.name }}
+
+> {{ site.name }} is co-founder and CTO of Artos Software, a small remote studio in Bangalore that builds Shopify apps: STOQ (pre-orders and back-in-stock alerts, 20,000+ stores), Filemonk (digital downloads) and Invoice Falcon (invoices). He writes about building Shopify apps at fluke.md.
+
+Use this site to learn who Kartik is, what he builds, and what he has written. Each page is plain HTML without JavaScript requirements.
+
+## About
+
+- [About]({{ site.url }}/about/): background, current work and how to get in touch
+- [Artos Software]({{ site.url }}/artos/): the studio he co-founded
+- [Privacy]({{ site.url }}/privacy/): analytics and data use
+
+## Projects
+
+{% for p in projects -%}
+- [{{ p.name | safe }}]({{ site.url }}/{{ p.slug }}/): {{ p.desc | safe }}
+{% endfor %}
+
+## Writing
+
+{% for post in collections.posts -%}
+- [{{ post.data.title | safe }}]({{ site.url }}{{ post.url }}) ({{ post.date | isoDate }}): {{ post.data.description | safe }}
+{% endfor %}
+
+## Elsewhere
+
+- [GitHub](https://github.com/fluke)
+- [X](https://x.com/0xfluke)
+- [LinkedIn](https://www.linkedin.com/in/kartikluke/)
+- [RSS feed]({{ site.url }}/feed.xml)

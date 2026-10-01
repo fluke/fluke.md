@@ -24,6 +24,7 @@ export default [
   },
   {
     slug: "stoq",
+    app: true,
     name: "STOQ",
     section: "NOW",
     menu: "Pre-orders and restock alerts.",
@@ -48,6 +49,7 @@ export default [
   },
   {
     slug: "filemonk",
+    app: true,
     name: "Filemonk",
     section: "NOW",
     menu: "Digital downloads.",
@@ -64,6 +66,7 @@ export default [
   },
   {
     slug: "invoice-falcon",
+    app: true,
     name: "Invoice Falcon",
     section: "NOW",
     menu: "Invoices and packing slips.",
