@@ -1,6 +1,7 @@
 // D-pad controls: ↑/↓ move the cursor, Enter/A opens, ←/→ page, Esc/B goes back.
 // On the home page the cursor starts after the name, which is the stop before
-// the first menu item and after the last one.
+// the first menu item and after the last one. On phones the same actions are
+// on-screen buttons: a Game Boy pad on the console pages, a small pill on posts.
 (function () {
   var items = Array.prototype.slice.call(document.querySelectorAll('.menu a, .home .more'));
   var pager = Array.prototype.slice.call(document.querySelectorAll('.pager a'));
@@ -32,29 +33,59 @@
     a.addEventListener('mouseenter', function () { a.focus({ preventScroll: true }); });
   });
 
+  // One action per button; returns true when it did something.
+  function act(button) {
+    var i = items.indexOf(document.activeElement);
+    if ((button === 'up' || button === 'down') && items.length) {
+      var step = button === 'down' ? 1 : -1;
+      select(i === -1 ? (step === 1 ? 0 : items.length - 1) : i + step);
+      return true;
+    }
+    if (button === 'a' && document.activeElement && document.activeElement.tagName === 'A') {
+      document.activeElement.click();
+      return true;
+    }
+    if (button === 'left' && prev) { prev.click(); return true; }
+    if (button === 'right' && next) { next.click(); return true; }
+    if (button === 'b' && back) { back.click(); return true; }
+    if (button === 'b' && home && i !== -1) { document.activeElement.blur(); return true; }
+    return false;
+  }
+
+  var KEYS = { ArrowUp: 'up', ArrowDown: 'down', ArrowLeft: 'left', ArrowRight: 'right', a: 'a', b: 'b', Escape: 'b' };
   document.addEventListener('keydown', function (e) {
     if (e.metaKey || e.ctrlKey || e.altKey || e.shiftKey) return;
     var t = e.target;
     if (t && (t.isContentEditable || /^(INPUT|TEXTAREA|SELECT)$/.test(t.tagName))) return;
-
-    var i = items.indexOf(document.activeElement);
     var key = e.key.length === 1 ? e.key.toLowerCase() : e.key;
-
-    if ((key === 'ArrowDown' || key === 'ArrowUp') && items.length) {
-      e.preventDefault();
-      var step = key === 'ArrowDown' ? 1 : -1;
-      if (i === -1) select(step === 1 ? 0 : items.length - 1);
-      else select(i + step);
-    } else if (key === 'a' && document.activeElement && document.activeElement.tagName === 'A') {
-      document.activeElement.click();
-    } else if (key === 'ArrowLeft' && prev) {
-      prev.click();
-    } else if (key === 'ArrowRight' && next) {
-      next.click();
-    } else if ((key === 'Escape' || key === 'b') && back) {
-      back.click();
-    } else if ((key === 'Escape' || key === 'b') && home && i !== -1) {
-      document.activeElement.blur();
-    }
+    var button = KEYS[key];
+    if (button && act(button) && (button === 'up' || button === 'down')) e.preventDefault();
   });
+
+  // On-screen buttons. Without a menu, ↑/↓ scroll the page instead.
+  document.querySelectorAll('[data-pad]').forEach(function (el) {
+    el.addEventListener('click', function (e) {
+      e.preventDefault();
+      var button = el.getAttribute('data-pad');
+      if (navigator.vibrate) navigator.vibrate(8);
+      if (button === 'start') { location.href = '/'; return; }
+      if (button === 'select') { location.href = '/writing/'; return; }
+      if (act(button)) return;
+      if (button === 'up' || button === 'down') {
+        window.scrollBy({ top: (button === 'down' ? 1 : -1) * window.innerHeight * 0.8, behavior: 'smooth' });
+      }
+    });
+  });
+
+  // The posts' pill tucks away while reading down and comes back on the way up.
+  var pill = document.querySelector('.minipad');
+  if (pill) {
+    var lastY = window.scrollY;
+    window.addEventListener('scroll', function () {
+      var y = window.scrollY;
+      var atEnd = window.innerHeight + y >= document.documentElement.scrollHeight - 40;
+      pill.classList.toggle('tucked', y > lastY && y > 120 && !atEnd);
+      lastY = y;
+    }, { passive: true });
+  }
 })();

@@ -45,5 +45,12 @@ themeColor: "#252c1e"
     {% if newer %}<a href="{{ newer.url }}">{{ newer.data.short | upper }} ▶</a>{% else %}<span></span>{% endif %}
   </nav>
 </main>
+<nav class="minipad" aria-label="Controls">
+  <button data-pad="left" aria-label="Older post"{% if not older %} disabled{% endif %}>◀</button>
+  <button data-pad="up" aria-label="Scroll up">▲</button>
+  <button data-pad="down" aria-label="Scroll down">▼</button>
+  <button data-pad="right" aria-label="Newer post"{% if not newer %} disabled{% endif %}>▶</button>
+  <button class="mb" data-pad="b" aria-label="Back to writing">B</button>
+</nav>
 </body>
 </html>
