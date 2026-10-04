@@ -1,19 +1,21 @@
 ---
-title: "More code, more risk: my job is now deciding how things ship"
+title: "More code, more risk: managing AI like an engineering team"
 short: More code, more risk
-description: With coding agents writing most of our changes, my job has shifted from writing code to managing risk — toggles, waves, shadow runs and kill switches.
+description: With AI agents doing the engineering work, my job has become an engineering manager's — deciding what ships and managing the risk with toggles, waves, shadow runs and kill switches.
 date: 2026-10-04
 tags: [engineering, rails, ai]
 draft: true
 ---
 
-<p class="todo">TODO: an opening moment in your own words, e.g. the week you noticed you'd reviewed far more than you'd written.</p>
+<p class="todo">TODO: an opening moment in your own words, e.g. the first week you realised you hadn't written or reviewed a line yourself.</p>
 
-At [Artos Software](https://artossoftware.com) we run Shopify apps on tens of thousands of stores. A year ago most of our code was typed by us. Now coding agents write most of the first drafts, and we get through far more changes in a week than we used to in a month. I wrote at the time that I was still the bottleneck as the operator: the agents can open fifty PRs, but reviewing and landing them is still sequential. That's still true, but the job around it has changed. I spend less time asking "is this code right?" and more time asking "what happens if it isn't?"
+At [Artos Software](https://artossoftware.com) we run Shopify apps on tens of thousands of stores. Last year I wrote that with coding agents I was still the bottleneck as the operator: the agents could open fifty PRs, but reviewing and landing them was on me. I thought the answer was hiring more operators.
+
+It moved faster than that. Now the agents do that loop too: they pick up the work, implement it, test it, review each other's changes and open the PR. My job looks a lot more like an engineering manager's. I decide what we build, how it ships and whether it worked. I spend almost no time asking "is this code right?" and most of it asking "what happens if it isn't?"
 
 ## What changed?
 
-The amount of change. Each PR is usually small and reasonable on its own. But when there are many of them, the odds that one of them is subtly wrong go up, and so do the odds that two reasonable changes interact badly. Review still catches most of it. It can't catch all of it, because the review only sees the diff, not twenty thousand stores with their own themes, apps and data.
+The amount of change, and how far I am from it. We get through more changes in a week than we used to in a month, and I don't read most of them line by line. Each one is usually small and reasonable on its own. But with that many, the odds that one is subtly wrong go up, and so do the odds that two reasonable changes interact badly. Agent review and tests catch most of it. They can't catch all of it, because they only see the code, not twenty thousand stores with their own themes, apps and data.
 
 So the question I care about is no longer whether a change is perfect. It's how many stores a change can hurt before we notice, and how fast we can take it back.
 
@@ -72,8 +74,8 @@ Every toggle is a kill switch, but only if it works when you need it. A few thin
 
 ## So what does the job look like now?
 
-Less typing, more deciding. Most of my day is reading diffs, choosing what ships dormant, picking wave sizes, and watching dashboards to decide whether the next wave goes out. It's also why we've been hiring operators: people with strong product and technical judgement who can run that loop, not just write code.
+The same job an engineering manager has, with the team made of agents. I set priorities and write the brief. I decide what ships dormant and how big each wave is. Then I watch the numbers and decide whether the next wave goes out. I hardly write code, and I don't need to review most of it. What I can't hand off is judgement about risk: what could break, for whom, and how we'd know.
 
-<p class="todo">TODO: one or two numbers if you have them (changes per week before and after, how many toggles are live, a time a wave caught something).</p>
+<p class="todo">TODO: one or two numbers if you have them (changes per week before and after, how many toggles are live, a time a wave or shadow run caught something an agent missed).</p>
 
-And that covers how my job changed. If you're running a team through the same shift, say hi on [X](https://x.com/0xfluke).
+And that covers how my job changed. If you're going through the same shift, say hi on [X](https://x.com/0xfluke).
