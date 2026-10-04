@@ -7,14 +7,14 @@ tags: [rails, render, heroku]
 draft: true
 ---
 
-At [Artos Software](https://artossoftware.com) we run [STOQ](https://www.stoqapp.com), a Rails app that serves Shopify storefronts, a merchant dashboard and a lot of background jobs. It had lived on Heroku for years. This year we moved its web tier to Render, one service at a time, while the rest kept running on Heroku. <span class="todo">TODO: one sentence in your words on what kicked it off in February.</span>
+At [Artos Software](https://artossoftware.com) we run [STOQ](https://www.stoqapp.com), a Rails app that serves Shopify storefronts, a merchant dashboard and a lot of background jobs. It had lived on Heroku for years. This year we moved its web tier to Render, one service at a time, while the rest kept running on Heroku. The reason was simple: Heroku has felt like it's in maintenance mode for a while, and we didn't want to bet the next few years on a platform that looks like it's winding down.
 
 ## Why leave Heroku?
 
-It wasn't fire-fighting. It was cost and memory.
+It wasn't fire-fighting, and it wasn't for a number on an invoice. It was about where we'd be in a few years, and once we looked closely, Render was better for a Rails app in a few concrete ways:
 
 - **Database egress roughly halved.** Our Postgres lives on PlanetScale. Render can reach it over AWS PrivateLink for about half the price per terabyte of public egress, once the services sat in the same region.
-- **Memory headroom brought YJIT back.** We'd turned YJIT off on Heroku after out-of-memory crashes on 1 GB dynos. On 2 GB instances, three Puma workers with YJIT sit around 1.1 GB, so it's back on.
+- **Memory headroom.** Each Puma worker sits at roughly 400–500 MB. A 1 GB Heroku dyno could barely fit two, and we'd turned YJIT off there after out-of-memory crashes. On Render we can run bigger instances: a 4 GB one runs eight workers, and YJIT is back on.
 - **We control malloc.** Render's native Ruby runtime doesn't ship jemalloc, so we moved to a Docker image where we set it ourselves.
 - **Fewer add-ons.** An over-provisioned Redis, a cron add-on and an autoscaler all go away.
 
@@ -83,7 +83,9 @@ Nearly every problem came from running one app on two platforms at once: two Red
 
 ## Did it work?
 
-The whole web tier and all of staging now run on Render, and it serves about 93% of our web traffic. Request queueing on the storefront service is 1–2 ms, against 60–140 ms on the Heroku web dynos that are left. The biggest lesson was about capacity: our web services are CPU-idle and memory-bound. About 400 MB per Puma worker is just the app booted, not a leak, so the lever is memory per instance. That's why the dashboard and storefront services moved to 4 GB instances to fit more workers. <span class="todo">TODO: cost saved so far (not visible from the codebase or monitoring).</span>
+The whole web tier and all of staging now run on Render, and it serves about 93% of our web traffic. Request queueing on the storefront service is 1–2 ms, against 60–140 ms on the Heroku web dynos that are left. The biggest lesson was about capacity: our web services are CPU-idle and memory-bound. About 400 MB per Puma worker is just the app booted, not a leak, so the lever is memory per instance. That's why the dashboard and storefront services moved to 4 GB instances to fit more workers.
+
+**What did it save?** I don't have a clean number, and I'd rather say so. Too much changed at once. Bigger instances made the same work cheaper per request, but over the same months two other projects cut the work itself: [moving order updates to Shopify Events](/writing/shopify-events-filters/) took out most of our `orders/updated` webhooks, and moving the theme extension's reads to the Storefront API cut calls to our servers. Any before-and-after bill mixes all three.
 
 What's left is the part we deliberately deferred: production workers, crons, and running migrations on Render so the deploy watcher can go.
 
