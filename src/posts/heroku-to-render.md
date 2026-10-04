@@ -1,26 +1,34 @@
 ---
 title: "Heroku to Render: moving a Rails app one service at a time"
 short: Heroku to Render, one service at a time
-description: How we moved a busy Rails app's web tier from Heroku to Render without a big-bang cutover — and what running one app on two platforms at once taught us.
+description: How we moved a busy Rails app off Heroku in two steps, database to PlanetScale and then the app to Render, without a big-bang cutover, and what running one app on two platforms taught us.
 date: 2026-09-29
 tags: [rails, render, heroku]
 draft: true
 ---
 
-At [Artos Software](https://artossoftware.com) we run [STOQ](https://www.stoqapp.com), a Rails app that serves Shopify storefronts, a merchant dashboard and a lot of background jobs. It had lived on Heroku for years. This year we moved its web tier to Render, one service at a time, while the rest kept running on Heroku. The reason was simple: Heroku has felt like it's in maintenance mode for a while, and we didn't want to bet the next few years on a platform that looks like it's winding down.
+At [Artos Software](https://artossoftware.com) we run [STOQ](https://www.stoqapp.com), a Rails app that serves Shopify storefronts, a merchant dashboard and a lot of background jobs. It had lived on Heroku for years. This year we moved off it in two steps: first the database, then the app.
 
 ## Why leave Heroku?
 
-It wasn't fire-fighting, and it wasn't for a number on an invoice. It was about where we'd be in a few years, and once we looked closely, Render was better for a Rails app in a few concrete ways:
+It started with the database. Most of our reliability problems on Heroku came from Heroku Postgres, so the first move was our database to [PlanetScale](https://planetscale.com) Postgres. Only after that did we start moving the app.
 
-- **Database egress roughly halved.** Our Postgres lives on PlanetScale. Render can reach it over AWS PrivateLink for about half the price per terabyte of public egress, once the services sat in the same region.
+Then there was the platform itself. Heroku has felt like it's in maintenance mode for a while, and we didn't want to bet the next few years on something that looks like it's winding down. So this wasn't fire-fighting, and it wasn't for a number on an invoice. Once we looked closely, though, Render was better for a Rails app in a few concrete ways:
+
 - **Memory headroom.** Each Puma worker sits at roughly 400–500 MB. A 1 GB Heroku dyno could barely fit two, and we'd turned YJIT off there after out-of-memory crashes. On Render we can run bigger instances: a 4 GB one runs eight workers, and YJIT is back on.
+- **A private path to the database.** Render reaches PlanetScale over AWS PrivateLink, which also costs about half as much per terabyte as public egress.
 - **We control malloc.** Render's native Ruby runtime doesn't ship jemalloc, so we moved to a Docker image where we set it ourselves.
 - **Fewer add-ons.** An over-provisioned Redis, a cron add-on and an autoscaler all go away.
 
+## Doesn't splitting the app and database across clouds add latency?
+
+That's the obvious worry: every query now crosses from one provider to another. Two things took care of it. We moved the app into the same AWS region as the database, and Render connects to PlanetScale over AWS PrivateLink, so queries travel a private network path instead of the public internet. We haven't missed the old setup. Requests on Render wait 1–2 ms in the queue, against 60–140 ms on the Heroku web dynos that are left.
+
+<span class="todo">TODO (optional): a before/after database latency number, and when the PlanetScale cutover happened.</span>
+
 ## So how do you move a Rails app without a big-bang cutover?
 
-Service by service, starting with the one nobody outside the team uses.
+With the database already on PlanetScale, we moved the app service by service, starting with the one nobody outside the team uses.
 
 1. **Admin first,** as the proof of concept.
 2. **Network and region:** move to the same region as the database, then switch to PrivateLink.
@@ -83,7 +91,7 @@ Nearly every problem came from running one app on two platforms at once: two Red
 
 ## Did it work?
 
-The whole web tier and all of staging now run on Render, and it serves about 93% of our web traffic. Request queueing on the storefront service is 1–2 ms, against 60–140 ms on the Heroku web dynos that are left. The biggest lesson was about capacity: our web services are CPU-idle and memory-bound. About 400 MB per Puma worker is just the app booted, not a leak, so the lever is memory per instance. That's why the dashboard and storefront services moved to 4 GB instances to fit more workers.
+The whole web tier and all of staging now run on Render, and it serves about 93% of our web traffic. The biggest lesson was about capacity: our web services are CPU-idle and memory-bound. About 400 MB per Puma worker is just the app booted, not a leak, so the lever is memory per instance. That's why the dashboard and storefront services moved to 4 GB instances to fit more workers.
 
 **What did it save?** I don't have a clean number, and I'd rather say so. Too much changed at once. Bigger instances made the same work cheaper per request, but over the same months two other projects cut the work itself: [moving order updates to Shopify Events](/writing/shopify-events-filters/) took out most of our `orders/updated` webhooks, and moving the theme extension's reads to the Storefront API cut calls to our servers. Any before-and-after bill mixes all three.
 
