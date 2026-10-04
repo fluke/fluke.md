@@ -154,8 +154,8 @@ h1, h2 { margin: 0; }
 .menu a:hover { text-decoration: none; }
 .menu a:focus { outline: none; }
 .menu .cur { visibility: hidden; margin-top: 6px; flex-shrink: 0; shape-rendering: crispEdges; }
-.menu a:hover .cur, .menu a:focus .cur { visibility: visible; }
-.menu a:hover .nm, .menu a:focus .nm { text-decoration: underline; text-decoration-thickness: 2px; text-underline-offset: 4px; }
+.menu a:hover .cur, .menu a:focus .cur, .menu a.is-sel .cur { visibility: visible; }
+.menu a:hover .nm, .menu a:focus .nm, .menu a.is-sel .nm { text-decoration: underline; text-decoration-thickness: 2px; text-underline-offset: 4px; }
 .menu .nm { font-size: 26px; }
 .menu.posts .nm { font-size: 26px; }
 .menu .sub { font-size: 20px; color: #343c28; }
@@ -179,7 +179,7 @@ h1, h2 { margin: 0; }
 .home .lists { flex: 1 1 0; min-width: 260px; display: flex; flex-direction: column; gap: 26px; padding-top: 6px; }
 .home h2 { font-size: 12px; letter-spacing: 2px; margin-bottom: 12px; }
 .home .more { display: inline-block; margin: 12px 0 0 24px; font-size: 10px; letter-spacing: 1px; }
-.home .more:focus, .home .more:hover { outline: none; text-decoration: underline; text-decoration-thickness: 2px; text-underline-offset: 4px; }
+.home .more:focus, .home .more:hover, .home .more.is-sel { outline: none; text-decoration: underline; text-decoration-thickness: 2px; text-underline-offset: 4px; }
 
 /* ---------- project page ---------- */
 .project { flex: 1; display: flex; gap: clamp(32px, 4vw, 64px); }
@@ -283,43 +283,43 @@ h1, h2 { margin: 0; }
 /* ---------- on-screen controls (phones) ---------- */
 .pad { display: none; }
 @media (max-width: 900px) {
-  html { scroll-padding-bottom: 200px; }
-  body { padding-bottom: 176px; }
-  .menu a:focus .cur { display: inline; visibility: visible; }
+  html { scroll-padding-bottom: 150px; }
+  body { padding-bottom: 120px; }
+  .menu a.is-sel .cur { display: inline; visibility: visible; }
   .pad {
     display: grid; grid-template-columns: 1fr auto 1fr; align-items: center;
     position: fixed; left: 0; right: 0; bottom: 0; z-index: 50;
-    padding: 16px 26px calc(18px + env(safe-area-inset-bottom));
-    background: var(--body); box-shadow: 0 -8px 24px rgba(30, 12, 70, .35);
+    padding: 10px 22px calc(12px + env(safe-area-inset-bottom));
+    background: var(--body); box-shadow: 0 -6px 18px rgba(30, 12, 70, .35);
     border-top: 2px solid var(--body-dark);
-    -webkit-tap-highlight-color: transparent; user-select: none; touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent; user-select: none; -webkit-user-select: none; touch-action: manipulation;
   }
   .pad button { border: 0; padding: 0; background: none; cursor: pointer; font: inherit; color: inherit; }
-  .dpad { display: grid; grid-template-columns: repeat(3, 40px); grid-template-rows: repeat(3, 40px); justify-self: start; filter: drop-shadow(0 3px 0 var(--body-dark)); }
+  .dpad { display: grid; grid-template-columns: repeat(3, 30px); grid-template-rows: repeat(3, 30px); justify-self: start; filter: drop-shadow(0 2px 0 var(--body-dark)); }
   .dpad .d { background: #2a2a2e; }
-  .dpad .up { grid-area: 1 / 2; border-radius: 6px 6px 0 0; }
-  .dpad .left { grid-area: 2 / 1; border-radius: 6px 0 0 6px; }
+  .dpad .up { grid-area: 1 / 2; border-radius: 5px 5px 0 0; }
+  .dpad .left { grid-area: 2 / 1; border-radius: 5px 0 0 5px; }
   .dpad .mid { grid-area: 2 / 2; }
-  .dpad .right { grid-area: 2 / 3; border-radius: 0 6px 6px 0; }
-  .dpad .down { grid-area: 3 / 2; border-radius: 0 0 6px 6px; }
+  .dpad .right { grid-area: 2 / 3; border-radius: 0 5px 5px 0; }
+  .dpad .down { grid-area: 3 / 2; border-radius: 0 0 5px 5px; }
   .dpad .d:active { background: #1d1d20; }
   .dpad .up::after, .dpad .down::after, .dpad .left::after, .dpad .right::after {
-    content: ''; display: block; margin: auto; width: 0; height: 0; border: 6px solid transparent;
+    content: ''; display: block; margin: auto; width: 0; height: 0; border: 5px solid transparent;
   }
-  .dpad .up::after { border-bottom-color: #55555c; margin-top: 8px; }
-  .dpad .down::after { border-top-color: #55555c; margin-top: 18px; }
-  .dpad .left::after { border-right-color: #55555c; margin-left: 8px; margin-top: 14px; }
-  .dpad .right::after { border-left-color: #55555c; margin-left: 20px; margin-top: 14px; }
-  .sys { display: flex; gap: 14px; align-self: end; margin-bottom: 2px; }
-  .sys button { display: flex; flex-direction: column; align-items: center; gap: 6px; }
-  .pill-btn { display: block; width: 38px; height: 11px; border-radius: 6px; background: #2a2a2e; transform: rotate(-25deg); box-shadow: 0 2px 0 var(--body-dark); }
+  .dpad .up::after { border-bottom-color: #55555c; margin-top: 5px; }
+  .dpad .down::after { border-top-color: #55555c; margin-top: 15px; }
+  .dpad .left::after { border-right-color: #55555c; margin-left: 5px; margin-top: 10px; }
+  .dpad .right::after { border-left-color: #55555c; margin-left: 15px; margin-top: 10px; }
+  .sys { display: flex; gap: 12px; align-self: end; }
+  .sys button { display: flex; flex-direction: column; align-items: center; gap: 5px; }
+  .pill-btn { display: block; width: 30px; height: 9px; border-radius: 5px; background: #2a2a2e; transform: rotate(-25deg); box-shadow: 0 2px 0 var(--body-dark); }
   .sys button:active .pill-btn { background: #1d1d20; }
-  .ab { justify-self: end; display: flex; gap: 14px; align-items: flex-start; transform: rotate(-25deg); }
-  .ab button { display: flex; flex-direction: column; align-items: center; gap: 6px; }
-  .ab .b { margin-top: 22px; }
-  .ab .btn { display: block; width: 50px; height: 50px; border-radius: 50%; background: #2f2a3d; box-shadow: 0 4px 0 var(--body-dark), inset 0 -3px 0 rgba(0, 0, 0, .25); }
-  .ab button:active .btn { transform: translateY(3px); box-shadow: 0 1px 0 var(--body-dark); }
-  .pad .lbl { font: 9px 'Press Start 2P', monospace; letter-spacing: 1px; color: #d8d6de; }
-  .ab .lbl { font-size: 11px; transform: rotate(25deg); }
+  .ab { justify-self: end; display: flex; gap: 10px; align-items: flex-start; transform: rotate(-25deg); }
+  .ab button { display: flex; flex-direction: column; align-items: center; gap: 4px; }
+  .ab .b { margin-top: 16px; }
+  .ab .btn { display: block; width: 38px; height: 38px; border-radius: 50%; background: #2f2a3d; box-shadow: 0 3px 0 var(--body-dark), inset 0 -2px 0 rgba(0, 0, 0, .25); }
+  .ab button:active .btn { transform: translateY(2px); box-shadow: 0 1px 0 var(--body-dark); }
+  .pad .lbl { font: 8px 'Press Start 2P', monospace; letter-spacing: 1px; color: #d8d6de; }
+  .ab .lbl { font-size: 9px; transform: rotate(25deg); }
   .home .keys { display: none; }
 }
