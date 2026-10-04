@@ -84,6 +84,6 @@ Most failures were silent: a `null` instead of an error.
 
 ## Did it work?
 
-On one collection page, 38 separate product fetches (almost 10 seconds cumulative, enough to freeze the tab on a fast scroll) became two batched calls with about 14× less data. <span class="todo">TODO: product-page load before/after and support-ticket numbers, once measured.</span>
+Product, selling-plan and integration reads are now on by default for every shop with a Storefront token, and shops with nothing to read get an empty answer instead of falling back to our servers. On one collection page, 38 separate product fetches (almost 10 seconds cumulative, enough to freeze the tab on a fast scroll) became two batched calls with about 14× less data. <span class="todo">TODO: product-page load before/after and support-ticket numbers, once measured.</span>
 
 And that covers moving a theme extension's reads to the Storefront API. If you're doing something similar, or want to compare notes, say hi on [X](https://x.com/0xfluke).

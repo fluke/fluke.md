@@ -27,7 +27,7 @@ Service by service, starting with the one nobody outside the team uses.
 3. **Staging,** completely: web, worker, crons and Redis.
 4. **Shared state:** one Redis both platforms can reach.
 5. **The merchant dashboard.**
-6. **Storefront traffic,** which is still moving shop by shop.
+6. **Storefront traffic,** shop by shop in waves, until every shop was on Render.
 
 The production workers, crons and database migrations stay on Heroku for now. We tried workers on both platforms in staging and they happily consumed the same SQS queues. For production we want one consumer per queue and a clean switch, not two platforms racing.
 
@@ -79,9 +79,11 @@ Nearly every problem came from running one app on two platforms at once: two Red
 
 **Two caches, one setting.** Heroku's `Rails.cache` is Memcached and Render's is Redis. Clearing a cached setting only clears it on the platform that saved it. That one goes away when the workers move.
 
+**Full traffic finds what partial traffic hides.** Once every storefront request landed on Render, memory per instance crept past 90%. Puma workers grew from about 400 MB to about 530 MB under load, and the only thing recycling them was a timed restart. We're adding recycling based on memory instead. The same week, we noticed that 42% of our web requests were CORS preflights: the storefront sent custom headers on simple GETs, so the browser asked permission before every one. Dropping those headers makes them plain requests again.
+
 ## Did it work?
 
-The whole web tier and all of staging now run on Render. The biggest lesson was about capacity: our web services are CPU-idle and memory-bound. About 400 MB per Puma worker is just the app booted, not a leak, so the lever is memory per instance. That's why the dashboard and storefront services moved to 4 GB instances to fit more workers. <span class="todo">TODO: cost saved so far, and before/after latency for the dashboard, if you have them.</span>
+The whole web tier and all of staging now run on Render, and it serves about 93% of our web traffic. Request queueing on the storefront service is 1–2 ms, against 60–140 ms on the Heroku web dynos that are left. The biggest lesson was about capacity: our web services are CPU-idle and memory-bound. About 400 MB per Puma worker is just the app booted, not a leak, so the lever is memory per instance. That's why the dashboard and storefront services moved to 4 GB instances to fit more workers. <span class="todo">TODO: cost saved so far (not visible from the codebase or monitoring).</span>
 
 What's left is the part we deliberately deferred: production workers, crons, and running migrations on Render so the deploy watcher can go.
 
